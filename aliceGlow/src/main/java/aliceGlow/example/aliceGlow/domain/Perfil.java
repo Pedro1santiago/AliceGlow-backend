@@ -1,4 +1,4 @@
-package aliceGlow.example.aliceGlow.models;
+package aliceGlow.example.aliceGlow.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
