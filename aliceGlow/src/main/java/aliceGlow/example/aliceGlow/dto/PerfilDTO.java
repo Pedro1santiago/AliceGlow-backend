@@ -4,7 +4,7 @@ import aliceGlow.example.aliceGlow.domain.Perfil;
 
 public record PerfilDTO(Long id, String name) {
 
-    public static PerfilDTO PerfilDTO(Perfil perfil){
+    public static PerfilDTO toDTO(Perfil perfil){
         return new PerfilDTO(perfil.getId(), perfil.getName());
     }
 
