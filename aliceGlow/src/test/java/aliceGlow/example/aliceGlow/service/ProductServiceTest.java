@@ -1,5 +1,4 @@
 package aliceGlow.example.aliceGlow.service;
-
 import aliceGlow.example.aliceGlow.domain.Product;
 import aliceGlow.example.aliceGlow.dto.product.CreateProductDTO;
 import aliceGlow.example.aliceGlow.dto.product.ProductDTO;
@@ -10,11 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -155,7 +152,7 @@ class ProductServiceTest {
 
         Long productId = 1L;
 
-        UpdateProductDTO UpdateProduct = new UpdateProductDTO(
+        UpdateProductDTO updateProduct = new UpdateProductDTO(
                 "Base Líquida Matte",
                 new BigDecimal("80.00"),
                 20
@@ -167,7 +164,7 @@ class ProductServiceTest {
 
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> productService.updateProduct(productId, UpdateProduct)
+                () -> productService.updateProduct(productId, updateProduct)
         );
 
         assertEquals("Product not found", exception.getMessage());
@@ -176,9 +173,53 @@ class ProductServiceTest {
         verify(productRepository, never()).save(any(Product.class));
     }
 
+    @Test
+    void shouldThrowExceptionWhenCostPriceIsNegativeOnUpdate(){
 
+        Long productId = 1L;
 
+        UpdateProductDTO product = new UpdateProductDTO(
+                "Mouse Gamer",
+                new BigDecimal("-120.00"),
+                15
+        );
 
+        Product existingProduct = new Product();
+        existingProduct.setId(productId);
+        existingProduct.setName("Mouse Gamer");
+        existingProduct.setCostPrice(new BigDecimal("100.00"));
+        existingProduct.setStock(10);
 
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(existingProduct));
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                        () -> productService.updateProduct(productId, product)
+        );
+
+        assertEquals("CostPrice cannot be negative", exception.getMessage());
+        verify(productRepository).findById(productId);
+        verify(productRepository, never()).save(any(Product.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenProductNotFoundOnDelete(){
+
+        Long productId = 1L;
+
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> productService.deleteProduct(productId)
+        );
+
+        assertEquals("Product not found", exception.getMessage());
+
+        verify(productRepository).findById(productId);
+        verify(productRepository, never()).delete(any(Product.class));
+    }
 
 }
