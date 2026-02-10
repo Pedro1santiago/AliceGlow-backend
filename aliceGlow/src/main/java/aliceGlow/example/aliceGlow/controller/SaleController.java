@@ -3,11 +3,9 @@ package aliceGlow.example.aliceGlow.controller;
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
-import aliceGlow.example.aliceGlow.dto.saleItem.SaleItemDTO;
 import aliceGlow.example.aliceGlow.service.SaleService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;

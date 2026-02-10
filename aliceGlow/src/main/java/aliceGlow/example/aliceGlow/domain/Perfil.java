@@ -1,7 +1,6 @@
 package aliceGlow.example.aliceGlow.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "perfis")

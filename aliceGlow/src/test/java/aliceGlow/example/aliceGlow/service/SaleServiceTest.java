@@ -1,7 +1,9 @@
 package aliceGlow.example.aliceGlow.service;
+import aliceGlow.example.aliceGlow.domain.Product;
 import aliceGlow.example.aliceGlow.domain.Sale;
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
+import aliceGlow.example.aliceGlow.dto.saleItem.CreateSaleItemDTO;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import aliceGlow.example.aliceGlow.repository.SaleRepository;
 import org.junit.jupiter.api.Test;
@@ -103,4 +105,48 @@ public class SaleServiceTest {
         verify(saleRepository).findById(saleId);
         verify(saleRepository).delete(sale);
     }
+
+    @Test
+    void shouldCreateSaleWithItemsSuccessfully() {
+
+        Long productIdOne = 1L;
+        Long productIdTwo = 2L;
+
+        Product productOne = new Product();
+        productOne.setId(productIdOne);
+        productOne.setName("Base");
+        productOne.setCostPrice(new BigDecimal("50.00"));
+
+        Product productTwo = new Product();
+        productTwo.setId(productIdTwo);
+        productTwo.setName("Base Líquida");
+        productTwo.setCostPrice(new BigDecimal("60.00"));
+
+        CreateSaleItemDTO itemOne = new CreateSaleItemDTO(productIdOne, 10);
+        CreateSaleItemDTO itemTwo = new CreateSaleItemDTO(productIdTwo, 10);
+
+        CreateSaleDTO dto = new CreateSaleDTO(
+                "Diana",
+                List.of(itemOne, itemTwo)
+        );
+
+        when(productRepository.findById(productIdOne))
+                .thenReturn(Optional.of(productOne));
+        when(productRepository.findById(productIdTwo))
+                .thenReturn(Optional.of(productTwo));
+        when(saleRepository.save(any(Sale.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        SaleDTO result = saleService.sale(dto);
+
+        assertNotNull(result);
+        assertEquals("Diana", result.client());
+        assertEquals(2, result.saleItems().size());
+        assertEquals(new BigDecimal("1100.00"), result.total());
+
+        verify(productRepository).findById(productIdOne);
+        verify(productRepository).findById(productIdTwo);
+        verify(saleRepository).save(any(Sale.class));
+    }
+
 }

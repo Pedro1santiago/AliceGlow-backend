@@ -5,7 +5,6 @@ import aliceGlow.example.aliceGlow.dto.user.UpdateUserDTO;
 import aliceGlow.example.aliceGlow.dto.user.UserDTO;
 import aliceGlow.example.aliceGlow.service.UserService;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

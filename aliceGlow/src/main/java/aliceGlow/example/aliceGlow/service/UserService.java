@@ -7,12 +7,8 @@ import aliceGlow.example.aliceGlow.dto.user.UpdateUserDTO;
 import aliceGlow.example.aliceGlow.dto.user.UserDTO;
 import aliceGlow.example.aliceGlow.repository.PerfilRepository;
 import aliceGlow.example.aliceGlow.repository.UserRepository;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {

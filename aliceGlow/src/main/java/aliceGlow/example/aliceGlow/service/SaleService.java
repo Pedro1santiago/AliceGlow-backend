@@ -1,12 +1,11 @@
 package aliceGlow.example.aliceGlow.service;
-
 import aliceGlow.example.aliceGlow.domain.Product;
 import aliceGlow.example.aliceGlow.domain.Sale;
 import aliceGlow.example.aliceGlow.domain.SaleItem;
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
-import aliceGlow.example.aliceGlow.dto.saleItem.SaleItemDTO;
+import aliceGlow.example.aliceGlow.dto.saleItem.CreateSaleItemDTO;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import aliceGlow.example.aliceGlow.repository.SaleItemRepository;
 import aliceGlow.example.aliceGlow.repository.SaleRepository;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +44,10 @@ public class SaleService {
         List<SaleItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
-        for (SaleItemDTO itemDTO : createSaleDTO.saleItems()) {
+        for (CreateSaleItemDTO itemDTO : createSaleDTO.saleItems()) {
 
             Product product = productRepository.findById(itemDTO.productId())
                     .orElseThrow(() -> new RuntimeException("Product not found"));
-
-            if (itemDTO.quantity() <= 0) {
-                throw new IllegalArgumentException("Quantity must be greater than zero");
-            }
 
             BigDecimal unitPrice = product.getCostPrice();
             BigDecimal subtotal = unitPrice.multiply(
@@ -108,6 +102,4 @@ public class SaleService {
                 ))
                 .toList();
     }
-
-
 }
