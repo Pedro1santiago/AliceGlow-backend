@@ -149,4 +149,22 @@ public class SaleServiceTest {
         verify(saleRepository).save(any(Sale.class));
     }
 
+    @Test
+    void shouldThrowExceptionWhenSaleNotFoundOnDelete(){
+
+        Long saleId = 1L;
+
+        when(saleRepository.findById(saleId))
+                .thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> saleService.deleteSale(saleId));
+
+        assertEquals("Sale not found", exception.getMessage());
+
+        verify(saleRepository).findById(saleId);
+
+    }
+
 }
