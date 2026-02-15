@@ -171,8 +171,10 @@ public class UserServiceTest {
                 () -> userService.deleteUser(userId)
         );
 
+        assertEquals("User not found with id: " + userId, exception.getMessage());
+
         verify(userRepository).findById(userId);
-        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).delete(any(User.class));
     }
 
 }
