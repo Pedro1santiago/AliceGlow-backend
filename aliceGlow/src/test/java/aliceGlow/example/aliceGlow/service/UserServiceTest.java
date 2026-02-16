@@ -13,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -31,6 +33,9 @@ public class UserServiceTest {
 
     @Mock
     PerfilRepository perfilRepository;
+
+    @Mock
+    PasswordEncoder passwordEncoder;
 
     @InjectMocks
     UserService userService;
@@ -79,7 +84,7 @@ public class UserServiceTest {
         User user = new User();
         user.setName("Diana");
         user.setEmail("diana@gmail.com");
-        user.setPassword("12345ps");
+        user.setPassword(passwordEncoder.encode("12345ps"));
         user.setPerfils(Set.of(perfil));
 
         when(userRepository.save(any(User.class)))
@@ -112,7 +117,7 @@ public class UserServiceTest {
         updatedUser.setId(userId);
         updatedUser.setName("Diana");
         updatedUser.setEmail("dianas@gmail.com");
-        updatedUser.setPassword("123ps");
+        updatedUser.setPassword(passwordEncoder.encode("12345ps"));
         updatedUser.setPerfils(Set.of(perfil));
 
         UpdateUserDTO dto = new UpdateUserDTO(
@@ -146,7 +151,7 @@ public class UserServiceTest {
         user.setId(userId);
         user.setName("Diana");
         user.setEmail("diana@gmail.com");
-        user.setPassword("12345ps");
+        user.setPassword(passwordEncoder.encode("12345ps"));
         user.setPerfils(Set.of(perfil));
 
         when(userRepository.findById(userId))

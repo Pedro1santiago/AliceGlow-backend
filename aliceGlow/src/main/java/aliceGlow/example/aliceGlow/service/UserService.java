@@ -6,9 +6,11 @@ import aliceGlow.example.aliceGlow.dto.user.CreateUserDTO;
 import aliceGlow.example.aliceGlow.dto.user.UpdateUserDTO;
 import aliceGlow.example.aliceGlow.dto.user.UserDTO;
 import aliceGlow.example.aliceGlow.exception.DefaultUserProfileNotFoundException;
+import aliceGlow.example.aliceGlow.exception.EmailAlreadyExistsException;
 import aliceGlow.example.aliceGlow.exception.UserNotFoundException;
 import aliceGlow.example.aliceGlow.repository.PerfilRepository;
 import aliceGlow.example.aliceGlow.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -19,9 +21,12 @@ public class UserService {
 
     private final PerfilRepository perfilRepository;
 
-    public UserService(UserRepository userRepository, PerfilRepository perfilRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userRepository, PerfilRepository perfilRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.perfilRepository = perfilRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserDTO> listUsers(){
@@ -32,10 +37,15 @@ public class UserService {
     }
 
     public UserDTO createUser(CreateUserDTO createUserDTO) {
+
+          if (userRepository.existsByEmail(createUserDTO.email())){
+              throw new EmailAlreadyExistsException();
+          }
+
           User user = new User();
           user.setName(createUserDTO.name());
           user.setEmail(createUserDTO.email());
-          user.setPassword(createUserDTO.password());
+          user.setPassword(passwordEncoder.encode(createUserDTO.password()));
 
           Perfil userPerfil = perfilRepository.findByName("USER")
                   .orElseThrow(DefaultUserProfileNotFoundException::new);
