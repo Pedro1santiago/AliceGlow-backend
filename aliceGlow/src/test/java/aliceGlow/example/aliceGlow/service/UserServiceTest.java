@@ -182,4 +182,91 @@ public class UserServiceTest {
         verify(userRepository, never()).delete(any(User.class));
     }
 
+    @Test
+    void shouldThrowExceptionWhenEmailAlreadyExists(){
+
+        CreateUserDTO dto = new CreateUserDTO(
+                "Diana",
+                "diana@gmail.com",
+                "12345pS",
+                new HashSet<>()
+        );
+
+        when(userRepository.existsByEmail(dto.email()))
+                .thenReturn(true);
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> userService.createUser(dto)
+        );
+
+        assertEquals("Email already exists", exception.getMessage());
+
+        verify(userRepository).existsByEmail(dto.email());
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDefaultProfileNotFound(){
+
+        CreateUserDTO dto = new CreateUserDTO(
+                "Diana",
+                "diana@gmail.com",
+                "12345pS",
+                new HashSet<>()
+        );
+
+        when(userRepository.existsByEmail(dto.email()))
+                .thenReturn(false);
+
+        when(perfilRepository.findByName("USER"))
+                .thenReturn(Optional.empty());
+
+        RuntimeException exception = assertThrows(
+                RuntimeException.class,
+                () -> userService.createUser(dto)
+        );
+
+        assertEquals("Default profile USER not found", exception.getMessage());
+
+        verify(perfilRepository).findByName("USER");
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldEncodePasswordBeforeSavingUser(){
+
+        CreateUserDTO dto = new CreateUserDTO(
+                "Diana",
+                "diana@gmail.com",
+                "12345pS",
+                new HashSet<>()
+        );
+
+        Perfil perfil = new Perfil();
+        perfil.setName("USER");
+
+        when(userRepository.existsByEmail(dto.email()))
+                .thenReturn(false);
+
+        when(perfilRepository.findByName("USER"))
+                .thenReturn(Optional.of(perfil));
+
+        when(passwordEncoder.encode(dto.password()))
+                .thenReturn("encodedPassword");
+
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserDTO result = userService.createUser(dto);
+
+        assertNotNull(result);
+
+        verify(passwordEncoder).encode(dto.password());
+        verify(userRepository).save(any(User.class));
+    }
+
+
+
+
 }
