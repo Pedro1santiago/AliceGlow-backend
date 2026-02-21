@@ -22,6 +22,9 @@ public class Sale {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
+    @Column(nullable = false)
+    private boolean canceled = false;
+
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> items;
 
@@ -30,18 +33,18 @@ public class Sale {
         this.createdAt = LocalDateTime.now();
     }
 
-    public Long getId() {return id;}
-    public void setId(Long id){this.id = id;}
+    public Long getId() { return id; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 
-    public LocalDateTime getCreatedAt(){return createdAt;}
-    public void setCreatedAt(LocalDateTime createdAt){this.createdAt = createdAt;}
+    public String getClient() { return client; }
+    public void setClient(String client) { this.client = client; }
 
-    public String getClient(){return client;}
-    public void setClient(String client){this.client = client;}
+    public BigDecimal getTotal() { return total; }
+    public void setTotal(BigDecimal total) { this.total = total; }
 
-    public BigDecimal getTotal(){return total;}
-    public void setTotal(BigDecimal total){this.total = total;}
+    public List<SaleItem> getItems() { return items; }
+    public void setItems(List<SaleItem> items) { this.items = items; }
 
-    public List<SaleItem> getItems(){return items;}
-    public void setItems(List<SaleItem> items){this.items = items;}
+    public boolean isCanceled() { return canceled; }
+    public void setCanceled(boolean canceled) { this.canceled = canceled; }
 }

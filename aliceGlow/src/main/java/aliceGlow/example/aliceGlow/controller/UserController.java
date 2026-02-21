@@ -5,6 +5,8 @@ import aliceGlow.example.aliceGlow.dto.user.UpdateUserDTO;
 import aliceGlow.example.aliceGlow.dto.user.UserDTO;
 import aliceGlow.example.aliceGlow.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,27 +22,27 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDTO createUser(@Valid @RequestBody CreateUserDTO userDTO) {
-        return userService.createUser(userDTO);
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(userService.createUser(dto));
     }
 
     @GetMapping
-    public List<UserDTO> listUsers() {
-        return userService.listUsers();
+    public ResponseEntity<List<UserDTO>> listUsers() {
+        return ResponseEntity.ok(userService.listUsers());
     }
 
     @PutMapping("/{id}")
-    public UserDTO updateUser(
+    public ResponseEntity<UserDTO> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserDTO dto
     ) {
-        return userService.updateUser(id, dto);
+        return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
-
-

@@ -5,6 +5,8 @@ import aliceGlow.example.aliceGlow.dto.product.ProductDTO;
 import aliceGlow.example.aliceGlow.dto.product.UpdateProductDTO;
 import aliceGlow.example.aliceGlow.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -19,22 +21,29 @@ public class ProductController {
     }
 
     @GetMapping
-    public List<ProductDTO> listProducts(){
-        return productService.listProducts();
+    public ResponseEntity<List<ProductDTO>> listProducts(){
+        return ResponseEntity.ok(productService.listProducts());
     }
 
     @PostMapping
-    public ProductDTO createProduct(@Valid @RequestBody CreateProductDTO createProductDTO){
-        return productService.createProduct(createProductDTO);
+    public ResponseEntity<ProductDTO> createProduct(
+            @Valid @RequestBody CreateProductDTO dto
+    ){
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(productService.createProduct(dto));
     }
 
     @PatchMapping("/{id}")
-    public ProductDTO updateProduct(@PathVariable Long id, @Valid @RequestBody UpdateProductDTO updateProductDTO){
-        return productService.updateProduct(id, updateProductDTO);
+    public ResponseEntity<ProductDTO> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProductDTO dto
+    ){
+        return ResponseEntity.ok(productService.updateProduct(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id){
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
+        return ResponseEntity.noContent().build();
     }
 }

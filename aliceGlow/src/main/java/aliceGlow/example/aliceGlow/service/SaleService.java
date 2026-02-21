@@ -1,4 +1,5 @@
 package aliceGlow.example.aliceGlow.service;
+
 import aliceGlow.example.aliceGlow.domain.Product;
 import aliceGlow.example.aliceGlow.domain.Sale;
 import aliceGlow.example.aliceGlow.domain.SaleItem;
@@ -12,8 +13,6 @@ import aliceGlow.example.aliceGlow.exception.SaleWithoutItemsException;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import aliceGlow.example.aliceGlow.repository.SaleItemRepository;
 import aliceGlow.example.aliceGlow.repository.SaleRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -24,83 +23,99 @@ import java.util.List;
 @Service
 public class SaleService {
 
-    private static final Logger log = LoggerFactory.getLogger(SaleService.class);
     private final SaleRepository saleRepository;
     private final ProductRepository productRepository;
     private final SaleItemRepository saleItemRepository;
 
-    public SaleService(SaleRepository saleRepository, ProductRepository productRepository, SaleItemRepository saleItemRepository){
+    public SaleService(
+            SaleRepository saleRepository,
+            ProductRepository productRepository,
+            SaleItemRepository saleItemRepository
+    ) {
         this.saleRepository = saleRepository;
         this.productRepository = productRepository;
         this.saleItemRepository = saleItemRepository;
     }
 
-    public List<SaleDTO> listSales(){
-      return saleRepository.findAll().stream().map(SaleDTO::toDTO).toList();
+    public List<SaleDTO> listSales() {
+        return saleRepository.findAll()
+                .stream()
+                .map(SaleDTO::toDTO)
+                .toList();
     }
 
-    public SaleDTO sale(CreateSaleDTO createSaleDTO) {
+    public SaleDTO findById(Long id) {
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(SaleNotFoundException::new);
+        return SaleDTO.toDTO(sale);
+    }
 
-        Sale sale = new Sale();
-        sale.setClient(createSaleDTO.client());
+    public SaleDTO sale(CreateSaleDTO dto) {
 
-        if (createSaleDTO.saleItems().isEmpty()) {
+        if (dto.saleItems().isEmpty()) {
             throw new SaleWithoutItemsException();
         }
 
+        Sale sale = new Sale();
+        sale.setClient(dto.client());
+
         List<SaleItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
- 
-        for (CreateSaleItemDTO itemDTO : createSaleDTO.saleItems()) {
+
+        for (CreateSaleItemDTO itemDTO : dto.saleItems()) {
 
             Product product = productRepository.findById(itemDTO.productId())
                     .orElseThrow(ProductNotFoundException::new);
 
-            BigDecimal unitPrice = product.getCostPrice();
-            BigDecimal subtotal = unitPrice.multiply(
-                    BigDecimal.valueOf(itemDTO.quantity())
-            );
+            if (product.getStock() < itemDTO.quantity()) {
+                throw new RuntimeException("Insufficient stock for product: " + product.getName());
+            }
+
+            BigDecimal subtotal =
+                    product.getCostPrice()
+                            .multiply(BigDecimal.valueOf(itemDTO.quantity()));
 
             SaleItem item = new SaleItem();
             item.setSale(sale);
             item.setProduct(product);
             item.setQuantity(itemDTO.quantity());
-            item.setUnitPrice(unitPrice);
+            item.setUnitPrice(product.getCostPrice());
             item.setSubtotal(subtotal);
 
             items.add(item);
             total = total.add(subtotal);
+
+            product.setStock(product.getStock() - itemDTO.quantity());
+            productRepository.save(product);
         }
 
         sale.setItems(items);
         sale.setTotal(total);
 
-        Sale savedSale = saleRepository.save(sale);
-
-        return SaleDTO.toDTO(savedSale);
+        return SaleDTO.toDTO(saleRepository.save(sale));
     }
 
-    public void deleteSale(Long id){
+    public void cancelSale(Long id) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(SaleNotFoundException::new);
-        saleRepository.delete(sale);
+
+        sale.setCanceled(true);
+        saleRepository.save(sale);
     }
 
-    public BigDecimal invoicing(){
+    public BigDecimal invoicing() {
         return saleRepository.sumAllInvoicing();
-
     }
 
     public BigDecimal invoicingByPeriod(LocalDateTime start, LocalDateTime end) {
         return saleRepository.sumInvoicingByPeriod(start, end);
     }
 
-    public BigDecimal profit(){
+    public BigDecimal profit() {
         return saleItemRepository.calculateTotalProfit();
     }
 
     public List<ProductSalesDTO> listProductSales() {
-
         return saleItemRepository.findTopSellingProducts()
                 .stream()
                 .map(row -> new ProductSalesDTO(

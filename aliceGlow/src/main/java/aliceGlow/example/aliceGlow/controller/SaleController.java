@@ -1,13 +1,12 @@
 package aliceGlow.example.aliceGlow.controller;
 
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
-import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
 import aliceGlow.example.aliceGlow.service.SaleService;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 import java.util.List;
 
 @RestController
@@ -16,52 +15,29 @@ public class SaleController {
 
     private final SaleService saleService;
 
-    public SaleController(SaleService saleService){
+    public SaleController(SaleService saleService) {
         this.saleService = saleService;
     }
 
     @GetMapping
-    public List<SaleDTO> listSales(){
-        return saleService.listSales();
+    public ResponseEntity<List<SaleDTO>> listSales() {
+        return ResponseEntity.ok(saleService.listSales());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SaleDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(saleService.findById(id));
     }
 
     @PostMapping
-    public SaleDTO createSale(@RequestBody CreateSaleDTO createSaleDTO){
-        return saleService.sale(createSaleDTO);
+    public ResponseEntity<SaleDTO> create(@RequestBody CreateSaleDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(saleService.sale(dto));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteSale(@PathVariable Long id){
-        saleService.deleteSale(id);
-    }
-
-
-    @GetMapping("/reports/invoicing")
-    public BigDecimal invoicing(){
-        return saleService.invoicing();
-    }
-
-    @GetMapping("/reports/invoicing/period")
-    public BigDecimal invoicingByPeriod(
-            @RequestParam("start")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime start,
-
-            @RequestParam("end")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime end
-    ){
-        return saleService.invoicingByPeriod(start, end);
-    }
-
-    @GetMapping("/reports/profit")
-    public BigDecimal profit(){
-        return saleService.profit();
-    }
-
-    @GetMapping("/reports/best-sales")
-    public List<ProductSalesDTO> listProductSales(){
-        return saleService.listProductSales();
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        saleService.cancelSale(id);
+        return ResponseEntity.noContent().build();
     }
 }
-
