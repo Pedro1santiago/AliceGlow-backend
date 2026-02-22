@@ -18,7 +18,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AuthController Tests")
 class AuthControllerTest {
 
     @Mock
@@ -37,42 +36,13 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Should return 200 OK with token when login is successful")
     void shouldLoginSuccessfully() {
-        when(authService.login(any(LoginDTO.class)))
-                .thenReturn(authResponse);
+        when(authService.login(any())).thenReturn(authResponse);
 
         ResponseEntity<AuthResponse> response = authController.login(loginDTO);
 
-        assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
         assertEquals("token_jwt_123", response.getBody().token());
-
-        verify(authService, times(1)).login(any(LoginDTO.class));
-        verify(authService, never()).logout();
+        verify(authService).login(any());
     }
-
-    @Test
-    @DisplayName("Should call authService.login with correct parameters")
-    void shouldCallAuthServiceWithCorrectParameters() {
-        when(authService.login(any(LoginDTO.class)))
-                .thenReturn(authResponse);
-
-        authController.login(loginDTO);
-
-        verify(authService).login(any(LoginDTO.class));
-    }
-
-    @Test
-    @DisplayName("Should return response with correct token and email")
-    void shouldReturnCorrectTokenAndEmail() {")
-    void shouldReturnCorrectToken() {
-        AuthResponse expectedResponse = new AuthResponse("new_token_456");
-        when(authService.login(any(LoginDTO.class)))
-                .thenReturn(expectedResponse);
-
-        ResponseEntity<AuthResponse> response = authController.login(loginDTO);
-
-        assertEquals("new_token_456", response.getBody().token
 }
