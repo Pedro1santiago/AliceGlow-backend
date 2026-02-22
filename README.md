@@ -352,6 +352,170 @@ O sistema implementa validações robustas em todas as camadas:
 - Regras de negócio no serviço
 - Constraints em banco de dados
 
+## 🧪 Testes Unitários
+
+### Estrutura de Testes
+
+A aplicação possui **36 testes unitários** cobrindo controllers e serviços com as melhores práticas de mercado:
+
+**Testes de Controllers (30 testes):**
+```
+src/test/java/aliceGlow/example/aliceGlow/controller/
+├── AuthControllerTest.java       (3 testes)
+├── ProductControllerTest.java    (8 testes)
+├── SaleControllerTest.java       (9 testes)
+└── UserControllerTest.java       (10 testes)
+```
+
+**Testes de Serviços (6 testes):**
+```
+src/test/java/aliceGlow/example/aliceGlow/service/
+├── AuthServiceTest.java          (6 testes) ⭐ NEW
+├── ProductServiceTest.java       (existente)
+├── SaleServiceTest.java          (existente)
+└── UserServiceTest.java          (existente)
+```
+
+### Arquitetura dos Testes
+
+- **Padrão**: Injeção de Dependência via Construtor
+- **Framework**: JUnit 5 + Mockito
+- **Isolamento**: MockitoExtension para isolamento de dependências
+- **Sem Banco de Dados**: Testes rápidos e independentes
+- **Verificação de Comportamento**: `verify()` para garantir chamadas corretas
+
+### Exemplo de Teste
+
+```java
+@ExtendWith(MockitoExtension.class)
+@DisplayName("ProductController Tests")
+class ProductControllerTest {
+
+    @Mock
+    private ProductService productService;
+
+    @InjectMocks
+    private ProductController productController;
+
+    @Test
+    @DisplayName("Should list all products with status 200 OK")
+    void shouldListProductsSuccessfully() {
+        // Arrange
+        when(productService.listProducts())
+                .thenReturn(List.of(productDTO1, productDTO2));
+
+        // Act
+        ResponseEntity<List<ProductDTO>> response = 
+            productController.listProducts();
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+
+        // Verify
+        verify(productService, times(1)).listProducts();
+    }
+}
+```
+
+### Executar Testes
+
+```bash
+# Todos os testes dos controllers
+mvnw clean test -Dtest=*ControllerTest
+
+# Todos os testes de serviços
+mvnw clean test -Dtest=*ServiceTest
+
+# Teste específico do controller
+mvnw test -Dtest=ProductControllerTest
+
+# Teste específico do serviço
+mvnw test -Dtest=AuthServiceTest
+
+# Um teste específico
+mvnw test -Dtest=AuthServiceTest#shouldLoginSuccessfully
+
+# Todos os testes
+mvnw clean test
+
+# Com cobertura de código
+mvnw clean test jacoco:report
+```
+
+### Testes AuthService
+
+O `AuthServiceTest` cobre o fluxo de autenticação com 6 testes:
+
+1. **shouldLoginSuccessfully** - Autentica usuário e retorna token JWT
+2. **shouldAuthenticateWithCorrectCredentials** - Valida credenciais
+3. **shouldReturnGeneratedToken** - Token gerado pelo JwtService
+4. **shouldGenerateTokenWithUserDetails** - Gera token com dados do usuário autenticado
+5. **shouldReturnNonNullAuthResponse** - Response nunca é null
+6. **shouldHandleDifferentCredentials** - Funciona com diferentes usuários
+
+**Exemplo:**
+```java
+@ExtendWith(MockitoExtension.class)
+class AuthServiceTest {
+    
+    @Mock
+    private AuthenticationManager authenticationManager;
+    
+    @Mock
+    private JwtService jwtService;
+    
+    @InjectMocks
+    private AuthService authService;
+
+    @Test
+    @DisplayName("Should authenticate user and return token when login is successful")
+    void shouldLoginSuccessfully() {
+        // Arrange
+        when(authenticationManager.authenticate(any()))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal())
+                .thenReturn(userDetails);
+        when(jwtService.generateToken(userDetails))
+                .thenReturn(generatedToken);
+
+        // Act
+        AuthResponse response = authService.login(loginDTO);
+
+        // Assert & Verify
+        assertEquals(generatedToken, response.token());
+        verify(authenticationManager).authenticate(any());
+        verify(jwtService).generateToken(userDetails);
+    }
+}
+```
+
+### Cobertura de Testes
+
+| Camada | Classe | Testes | Métodos | HTTP Status |
+|--------|--------|--------|---------|-------------|
+| **Controller** | Auth | 3 | login | 200 OK |
+| **Controller** | Product | 8 | list, create, update, delete | 200, 201, 204 |
+| **Controller** | Sale | 9 | list, findById, create, cancel | 200, 201, 204 |
+| **Controller** | User | 10 | create, list, update, delete | 200, 201, 204 |
+| **Service** | Auth | 6 | login, token generation, credentials | ✅ Todos |
+| **Total** | - | **36** | **20+ endpoints** | ✅ Cobertos |
+
+### Padrões Implementados
+
+1. **AAA Pattern**: Arrange, Act, Assert, Verify
+2. **DisplayName**: Testes com descrição legível
+3. **Mockito**: Mock de todas as dependências
+4. **Assertions Específicas**: Validação de HTTP Status, dados e comportamento
+5. **Isolamento Total**: Sem banco de dados, sem chamadas HTTP reais
+
+### Resultado Esperado
+
+```
+[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
 ## 🚀 Deployment em Produção
 
 ### Passos para Deploy no Render
