@@ -2,11 +2,11 @@
 
 Plataforma backend para gerenciamento de loja de produtos de beleza, desenvolvida com as melhores práticas de arquitetura e segurança. Sistema completo de autenticação, gerenciamento de usuários, produtos e vendas em tempo real.
 
-## 📋 Visão Geral
+## Visão Geral
 
 AliceGlow é uma API RESTful robusta e escalável desenvolvida para gerenciar uma loja de produtos de beleza. Com arquitetura moderna, segurança implementada via JWT e banco de dados relacional otimizado, a solução está pronta para ambientes de produção críticos.
 
-## 🛠 Stack Tecnológico
+## Stack Tecnológico
 
 ### Backend
 - **Java 17** - Linguagem de programação
@@ -24,13 +24,13 @@ AliceGlow é uma API RESTful robusta e escalável desenvolvida para gerenciar um
 - **Maven** - Gerenciador de dependências e build
 - **Jakarta Validation** - Validação de dados de entrada
 
-## 🌐 Deployment
+## Deployment
 
 - **Backend**: Render (render.com)
 - **Banco de Dados**: Neon (neon.tech)
 - **Containerização**: Docker (disponível via Dockerfile)
 
-## 📦 Dependências Principais
+## Dependências Principais
 
 ```xml
 <!-- Spring Boot Starter Web -->
@@ -72,7 +72,7 @@ AliceGlow é uma API RESTful robusta e escalável desenvolvida para gerenciar um
 </dependency>
 ```
 
-## 🚀 Começando
+## Começando
 
 ### Pré-requisitos
 
@@ -115,7 +115,7 @@ cd AliceGlow-backend/aliceGlow
 
 A API estará disponível em `http://localhost:8080`
 
-## 📚 Arquitetura
+## Arquitetura
 
 ### Estrutura de Diretórios
 
@@ -177,7 +177,7 @@ src/
 - **Service Layer** - Lógica de negócio centralizada
 - **Exception Handling** - Tratamento customizado de erros
 
-## 🔐 Autenticação e Segurança
+## Autenticação e Segurança
 
 A aplicação utiliza **JWT (JSON Web Token)** para autenticação e autorização:
 
@@ -186,7 +186,7 @@ A aplicação utiliza **JWT (JSON Web Token)** para autenticação e autorizaç�
 - Integração com Spring Security para proteção de endpoints
 - Validação automática de permissões por role
 
-## 📡 Endpoints da API
+## Endpoints da API
 
 ### Autenticação
 ```
@@ -219,7 +219,7 @@ POST /sales                # Criar nova venda
 ### Perfis
 Gerenciamento de perfis de usuário (admin, cliente, etc)
 
-## 🗄 Banco de Dados
+## Banco de Dados
 
 ### Migrations (Flyway)
 
@@ -261,7 +261,7 @@ As migrações são executadas automaticamente ao iniciar a aplicação:
 - Cliente
 - Gerenciador
 
-## ⚙️ Configuração
+## Configuração
 
 ### application.properties
 
@@ -290,7 +290,7 @@ spring.flyway.default-schema=public
 jwt.secret=${JWT_SECRET}
 ```
 
-## 🧪 Testes
+## Testes
 
 A aplicação inclui testes unitários para os principais componentes:
 
@@ -303,7 +303,7 @@ A aplicação inclui testes unitários para os principais componentes:
 - `SaleServiceTest.java` - Testes do serviço de vendas
 - `UserServiceTest.java` - Testes do serviço de usuários
 
-## 🐳 Docker
+## Docker
 
 A aplicação está containerizada e pode ser executada via Docker:
 
@@ -317,21 +317,21 @@ docker run -e DB_URL_JDBC=jdbc:postgresql://... \
            aliceglow-backend:latest
 ```
 
-## 📊 Monitoramento e Performance
+## Monitoramento e Performance
 
 Em produção no Render:
 - Logs estruturados disponíveis via dashboard
 - Métricas de uso de CPU e memória
 - Alertas configuráveis para anomalias
 
-## 🔄 CI/CD
+## CI/CD
 
 Configure pipelines de CI/CD para:
 - Executar testes automaticamente
 - Build e deploy automático em produção
 - Validação de código via linters
 
-## 🐛 Tratamento de Erros
+## Tratamento de Erros
 
 A aplicação implementa exceções customizadas para cenários específicos:
 
@@ -344,7 +344,7 @@ A aplicação implementa exceções customizadas para cenários específicos:
 - `CostPriceCannotBeNegativeException` - Preço negativo
 - `DefaultUserProfileNotFoundException` - Perfil padrão não encontrado
 
-## 📋 Validações
+## Validações
 
 O sistema implementa validações robustas em todas as camadas:
 
@@ -352,28 +352,28 @@ O sistema implementa validações robustas em todas as camadas:
 - Regras de negócio no serviço
 - Constraints em banco de dados
 
-## 🧪 Testes Unitários
+## Testes Unitários
 
 ### Estrutura de Testes
 
-A aplicação possui **36 testes unitários** cobrindo controllers e serviços com as melhores práticas de mercado:
+A aplicação possui testes unitários com as melhores práticas de mercado, cobrindo controllers e serviços:
 
-**Testes de Controllers (30 testes):**
+**Testes de Controllers:**
 ```
 src/test/java/aliceGlow/example/aliceGlow/controller/
-├── AuthControllerTest.java       (3 testes)
-├── ProductControllerTest.java    (8 testes)
-├── SaleControllerTest.java       (9 testes)
-└── UserControllerTest.java       (10 testes)
+├── AuthControllerTest.java       (1 teste)
+├── ProductControllerTest.java    (4 testes)
+├── SaleControllerTest.java       (1 teste)
+└── UserControllerTest.java       (1 teste)
 ```
 
-**Testes de Serviços (6 testes):**
+**Testes de Serviços:**
 ```
 src/test/java/aliceGlow/example/aliceGlow/service/
-├── AuthServiceTest.java          (6 testes) ⭐ NEW
-├── ProductServiceTest.java       (existente)
-├── SaleServiceTest.java          (existente)
-└── UserServiceTest.java          (existente)
+├── AuthServiceTest.java          (3 testes)
+├── ProductServiceTest.java       (7 testes)
+├── SaleServiceTest.java          (5 testes)
+└── UserServiceTest.java          (8 testes)
 ```
 
 ### Arquitetura dos Testes
@@ -383,37 +383,38 @@ src/test/java/aliceGlow/example/aliceGlow/service/
 - **Isolamento**: MockitoExtension para isolamento de dependências
 - **Sem Banco de Dados**: Testes rápidos e independentes
 - **Verificação de Comportamento**: `verify()` para garantir chamadas corretas
+- **Setup Comum**: `@BeforeEach` para preparação de dados
 
-### Exemplo de Teste
+### Exemplo de Teste (AuthControllerTest)
 
 ```java
 @ExtendWith(MockitoExtension.class)
-@DisplayName("ProductController Tests")
-class ProductControllerTest {
+class AuthControllerTest {
 
     @Mock
-    private ProductService productService;
+    private AuthService authService;
 
     @InjectMocks
-    private ProductController productController;
+    private AuthController authController;
+
+    private LoginDTO loginDTO;
+    private AuthResponse authResponse;
+
+    @BeforeEach
+    void setUp() {
+        loginDTO = new LoginDTO("test@example.com", "password123");
+        authResponse = new AuthResponse("token_jwt_123");
+    }
 
     @Test
-    @DisplayName("Should list all products with status 200 OK")
-    void shouldListProductsSuccessfully() {
-        // Arrange
-        when(productService.listProducts())
-                .thenReturn(List.of(productDTO1, productDTO2));
+    void shouldLoginSuccessfully() {
+        when(authService.login(any())).thenReturn(authResponse);
 
-        // Act
-        ResponseEntity<List<ProductDTO>> response = 
-            productController.listProducts();
+        ResponseEntity<AuthResponse> response = authController.login(loginDTO);
 
-        // Assert
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().size());
-
-        // Verify
-        verify(productService, times(1)).listProducts();
+        assertEquals("token_jwt_123", response.getBody().token());
+        verify(authService).login(any());
     }
 }
 ```
@@ -427,14 +428,12 @@ mvnw clean test -Dtest=*ControllerTest
 # Todos os testes de serviços
 mvnw clean test -Dtest=*ServiceTest
 
-# Teste específico do controller
-mvnw test -Dtest=ProductControllerTest
-
-# Teste específico do serviço
+# Teste específico
+mvnw test -Dtest=AuthControllerTest
 mvnw test -Dtest=AuthServiceTest
 
 # Um teste específico
-mvnw test -Dtest=AuthServiceTest#shouldLoginSuccessfully
+mvnw test -Dtest=AuthServiceTest#shouldAuthenticateAndReturnToken
 
 # Todos os testes
 mvnw clean test
@@ -443,80 +442,43 @@ mvnw clean test
 mvnw clean test jacoco:report
 ```
 
-### Testes AuthService
-
-O `AuthServiceTest` cobre o fluxo de autenticação com 6 testes:
-
-1. **shouldLoginSuccessfully** - Autentica usuário e retorna token JWT
-2. **shouldAuthenticateWithCorrectCredentials** - Valida credenciais
-3. **shouldReturnGeneratedToken** - Token gerado pelo JwtService
-4. **shouldGenerateTokenWithUserDetails** - Gera token com dados do usuário autenticado
-5. **shouldReturnNonNullAuthResponse** - Response nunca é null
-6. **shouldHandleDifferentCredentials** - Funciona com diferentes usuários
-
-**Exemplo:**
-```java
-@ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
-    
-    @Mock
-    private AuthenticationManager authenticationManager;
-    
-    @Mock
-    private JwtService jwtService;
-    
-    @InjectMocks
-    private AuthService authService;
-
-    @Test
-    @DisplayName("Should authenticate user and return token when login is successful")
-    void shouldLoginSuccessfully() {
-        // Arrange
-        when(authenticationManager.authenticate(any()))
-                .thenReturn(authentication);
-        when(authentication.getPrincipal())
-                .thenReturn(userDetails);
-        when(jwtService.generateToken(userDetails))
-                .thenReturn(generatedToken);
-
-        // Act
-        AuthResponse response = authService.login(loginDTO);
-
-        // Assert & Verify
-        assertEquals(generatedToken, response.token());
-        verify(authenticationManager).authenticate(any());
-        verify(jwtService).generateToken(userDetails);
-    }
-}
-```
-
 ### Cobertura de Testes
 
-| Camada | Classe | Testes | Métodos | HTTP Status |
-|--------|--------|--------|---------|-------------|
-| **Controller** | Auth | 3 | login | 200 OK |
-| **Controller** | Product | 8 | list, create, update, delete | 200, 201, 204 |
-| **Controller** | Sale | 9 | list, findById, create, cancel | 200, 201, 204 |
-| **Controller** | User | 10 | create, list, update, delete | 200, 201, 204 |
-| **Service** | Auth | 6 | login, token generation, credentials | ✅ Todos |
-| **Total** | - | **36** | **20+ endpoints** | ✅ Cobertos |
+| Camada | Classe | Testes | Métodos |
+|--------|--------|--------|---------|
+| **Controller** | Auth | 1 | login |
+| **Controller** | Product | 4 | list, create, update, delete |
+| **Controller** | Sale | 1 | list |
+| **Controller** | User | 1 | create |
+| **Service** | Auth | 3 | authenticate, token generation |
+| **Service** | Product | 7 | list, create, update, delete, exceptions |
+| **Service** | Sale | 5 | create, cancel, find, exceptions |
+| **Service** | User | 8 | create, list, update, delete, exceptions |
+| **Total** | - | **30** | **20+ endpoints** |
 
 ### Padrões Implementados
 
 1. **AAA Pattern**: Arrange, Act, Assert, Verify
-2. **DisplayName**: Testes com descrição legível
+2. **Setup com @BeforeEach**: Preparação comum de dados
 3. **Mockito**: Mock de todas as dependências
 4. **Assertions Específicas**: Validação de HTTP Status, dados e comportamento
 5. **Isolamento Total**: Sem banco de dados, sem chamadas HTTP reais
+6. **Nomes Descritivos**: Métodos com padrão should...
 
-### Resultado Esperado
+### Testes por Categoria
 
-```
-[INFO] Tests run: 30, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
-```
+**AuthServiceTest** (3 testes):
+- `shouldAuthenticateAndReturnToken` - Autentica e retorna token JWT
+- `shouldCallAuthenticationManagerWithCredentials` - Valida credenciais
+- `shouldGenerateTokenFromAuthenticatedUser` - Token gerado corretamente
 
-## 🚀 Deployment em Produção
+**ProductControllerTest** (4 testes):
+- `shouldListProductsSuccessfully` - Lista produtos (200 OK)
+- `shouldCreateProductSuccessfully` - Cria produto (201 CREATED)
+- `shouldUpdateProductSuccessfully` - Atualiza produto (200 OK)
+- `shouldDeleteProductSuccessfully` - Deleta produto (204 NO CONTENT)
+
+## Deployment em Produção
 
 ### Passos para Deploy no Render
 
@@ -535,7 +497,7 @@ DB_PASSWORD=sua_senha
 JWT_SECRET=sua_chave_secreta_muito_segura
 ```
 
-## 📝 Commits Convencionais
+## Commits Convencionais
 
 Utilize commits convencionais para melhor rastreabilidade:
 
@@ -547,7 +509,7 @@ test: adição/atualização de testes
 docs: atualização de documentação
 ```
 
-## 📄 Licença
+## Licença
 
 Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
@@ -561,7 +523,7 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 
 ---
 
-## 👨‍💼 Suporte
+## Suporte
 
 Para questões ou problemas, entre em contato através do GitHub: [@Pedro1santiago](https://github.com/Pedro1santiago)
 
