@@ -1,8 +1,6 @@
 package aliceGlow.example.aliceGlow.service;
 
-import aliceGlow.example.aliceGlow.domain.Product;
-import aliceGlow.example.aliceGlow.domain.Sale;
-import aliceGlow.example.aliceGlow.domain.SaleItem;
+import aliceGlow.example.aliceGlow.domain.*;
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
@@ -52,12 +50,15 @@ public class SaleService {
 
     public SaleDTO sale(CreateSaleDTO dto) {
 
-        if (dto.saleItems().isEmpty()) {
+        if (dto.saleItems() == null || dto.saleItems().isEmpty()) {
             throw new SaleWithoutItemsException();
         }
 
         Sale sale = new Sale();
         sale.setClient(dto.client());
+        sale.setPaymentMethod(dto.paymentMethod());
+        sale.setStatus(SaleStatus.PENDING);
+        sale.setPaidAt(null);
 
         List<SaleItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -99,7 +100,19 @@ public class SaleService {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(SaleNotFoundException::new);
 
-        sale.setCanceled(true);
+        sale.setStatus(SaleStatus.CANCELED);
+        sale.setPaidAt(null);
+
+        saleRepository.save(sale);
+    }
+
+    public void markAsPaid(Long id) {
+        Sale sale = saleRepository.findById(id)
+                .orElseThrow(SaleNotFoundException::new);
+
+        sale.setStatus(SaleStatus.PAID);
+        sale.setPaidAt(LocalDateTime.now());
+
         saleRepository.save(sale);
     }
 

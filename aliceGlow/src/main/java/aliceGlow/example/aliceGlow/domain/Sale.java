@@ -1,6 +1,7 @@
 package aliceGlow.example.aliceGlow.domain;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,8 +23,15 @@ public class Sale {
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private boolean canceled = false;
+    private SaleStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentMethod paymentMethod;
+
+    private LocalDateTime paidAt;
 
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> items;
@@ -42,9 +50,15 @@ public class Sale {
     public BigDecimal getTotal() { return total; }
     public void setTotal(BigDecimal total) { this.total = total; }
 
+    public SaleStatus getStatus() { return status; }
+    public void setStatus(SaleStatus status) { this.status = status; }
+
+    public PaymentMethod getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(PaymentMethod paymentMethod) { this.paymentMethod = paymentMethod; }
+
+    public LocalDateTime getPaidAt() { return paidAt; }
+    public void setPaidAt(LocalDateTime paidAt) { this.paidAt = paidAt; }
+
     public List<SaleItem> getItems() { return items; }
     public void setItems(List<SaleItem> items) { this.items = items; }
-
-    public boolean isCanceled() { return canceled; }
-    public void setCanceled(boolean canceled) { this.canceled = canceled; }
 }

@@ -1,7 +1,6 @@
 package aliceGlow.example.aliceGlow.service;
 
-import aliceGlow.example.aliceGlow.domain.Product;
-import aliceGlow.example.aliceGlow.domain.Sale;
+import aliceGlow.example.aliceGlow.domain.*;
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
 import aliceGlow.example.aliceGlow.dto.saleItem.CreateSaleItemDTO;
@@ -45,6 +44,7 @@ class SaleServiceTest {
 
         CreateSaleDTO dto = new CreateSaleDTO(
                 "Diana",
+                PaymentMethod.PIX,
                 List.of(new CreateSaleItemDTO(productId, 2))
         );
 
@@ -55,6 +55,7 @@ class SaleServiceTest {
 
         assertEquals("Diana", result.client());
         assertEquals(new BigDecimal("100.00"), result.total());
+        assertEquals(SaleStatus.PENDING, result.status());
     }
 
     @Test
@@ -62,12 +63,29 @@ class SaleServiceTest {
 
         Long id = 1L;
         Sale sale = new Sale();
+        sale.setStatus(SaleStatus.PENDING);
 
         when(saleRepository.findById(id)).thenReturn(Optional.of(sale));
 
         saleService.cancelSale(id);
 
-        assertTrue(sale.isCanceled());
+        assertEquals(SaleStatus.CANCELED, sale.getStatus());
+        verify(saleRepository).save(sale);
+    }
+
+    @Test
+    void shouldMarkSaleAsPaid() {
+
+        Long id = 1L;
+        Sale sale = new Sale();
+        sale.setStatus(SaleStatus.PENDING);
+
+        when(saleRepository.findById(id)).thenReturn(Optional.of(sale));
+
+        saleService.markAsPaid(id);
+
+        assertEquals(SaleStatus.PAID, sale.getStatus());
+        assertNotNull(sale.getPaidAt());
         verify(saleRepository).save(sale);
     }
 
@@ -84,6 +102,7 @@ class SaleServiceTest {
 
         CreateSaleDTO dto = new CreateSaleDTO(
                 "Diana",
+                PaymentMethod.PIX,
                 List.of(new CreateSaleItemDTO(1L, 2))
         );
 
@@ -94,7 +113,11 @@ class SaleServiceTest {
     @Test
     void shouldThrowWhenSaleHasNoItems() {
 
-        CreateSaleDTO dto = new CreateSaleDTO("Diana", List.of());
+        CreateSaleDTO dto = new CreateSaleDTO(
+                "Diana",
+                PaymentMethod.PIX,
+                List.of()
+        );
 
         assertThrows(SaleWithoutItemsException.class,
                 () -> saleService.sale(dto));

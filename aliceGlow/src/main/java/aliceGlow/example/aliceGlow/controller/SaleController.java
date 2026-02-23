@@ -1,16 +1,13 @@
 package aliceGlow.example.aliceGlow.controller;
 
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
-import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
 import aliceGlow.example.aliceGlow.service.SaleService;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -34,7 +31,7 @@ public class SaleController {
     }
 
     @PostMapping
-    public ResponseEntity<SaleDTO> create(@RequestBody CreateSaleDTO dto) {
+    public ResponseEntity<SaleDTO> create(@Valid @RequestBody CreateSaleDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(saleService.sale(dto));
     }
@@ -42,6 +39,12 @@ public class SaleController {
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long id) {
         saleService.cancelSale(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/pay")
+    public ResponseEntity<Void> pay(@PathVariable Long id) {
+        saleService.markAsPaid(id);
         return ResponseEntity.noContent().build();
     }
 }
