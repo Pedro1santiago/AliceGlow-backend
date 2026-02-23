@@ -44,27 +44,4 @@ public class SaleController {
         saleService.cancelSale(id);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/reports/invoicing")
-    public ResponseEntity<BigDecimal> invoicing() {
-        return ResponseEntity.ok(saleService.invoicing());
-    }
-
-    @GetMapping("/reports/invoicing-period")
-    public ResponseEntity<BigDecimal> invoicingByPeriod(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
-    ) {
-        return ResponseEntity.ok(saleService.invoicingByPeriod(start, end));
-    }
-
-    @GetMapping("/reports/profit")
-    public ResponseEntity<BigDecimal> profit() {
-        return ResponseEntity.ok(saleService.profit());
-    }
-
-    @GetMapping("/reports/products")
-    public ResponseEntity<List<ProductSalesDTO>> productSales() {
-        return ResponseEntity.ok(saleService.listProductSales());
-    }
 }
