@@ -5,12 +5,14 @@ import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
 import aliceGlow.example.aliceGlow.dto.saleItem.CreateSaleItemDTO;
+import aliceGlow.example.aliceGlow.exception.InsufficientStockException;
 import aliceGlow.example.aliceGlow.exception.ProductNotFoundException;
 import aliceGlow.example.aliceGlow.exception.SaleNotFoundException;
 import aliceGlow.example.aliceGlow.exception.SaleWithoutItemsException;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import aliceGlow.example.aliceGlow.repository.SaleItemRepository;
 import aliceGlow.example.aliceGlow.repository.SaleRepository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -48,6 +50,7 @@ public class SaleService {
         return SaleDTO.toDTO(sale);
     }
 
+    @Transactional
     public SaleDTO sale(CreateSaleDTO dto) {
 
         if (dto.saleItems() == null || dto.saleItems().isEmpty()) {
@@ -69,25 +72,28 @@ public class SaleService {
                     .orElseThrow(ProductNotFoundException::new);
 
             if (product.getStock() < itemDTO.quantity()) {
-                throw new RuntimeException("Insufficient stock for product: " + product.getName());
+                throw new InsufficientStockException(product.getId());
             }
 
-            BigDecimal subtotal =
-                    product.getCostPrice()
-                            .multiply(BigDecimal.valueOf(itemDTO.quantity()));
+                BigDecimal quantity = BigDecimal.valueOf(itemDTO.quantity());
+                BigDecimal unitCostPrice = product.getCostPrice();
+                BigDecimal unitPrice = itemDTO.unitPrice();
+                BigDecimal subtotal = unitPrice.multiply(quantity);
+                BigDecimal costSubtotal = unitCostPrice.multiply(quantity);
 
             SaleItem item = new SaleItem();
             item.setSale(sale);
             item.setProduct(product);
             item.setQuantity(itemDTO.quantity());
-            item.setUnitPrice(product.getCostPrice());
+                item.setUnitPrice(unitPrice);
+                item.setUnitCostPrice(unitCostPrice);
             item.setSubtotal(subtotal);
+                item.setCostSubtotal(costSubtotal);
 
             items.add(item);
             total = total.add(subtotal);
 
             product.setStock(product.getStock() - itemDTO.quantity());
-            productRepository.save(product);
         }
 
         sale.setItems(items);

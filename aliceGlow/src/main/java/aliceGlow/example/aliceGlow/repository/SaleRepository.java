@@ -10,9 +10,9 @@ import java.time.LocalDateTime;
 
 public interface SaleRepository extends JpaRepository<Sale, Long> {
 
-    @Query("SELECT COALESCE(SUM(s.total), 0) FROM Sale s")
+    @Query("SELECT COALESCE(SUM(s.total), 0) FROM Sale s WHERE s.status <> 'CANCELED'")
     BigDecimal sumAllInvoicing();
 
-    @Query("SELECT COALESCE(SUM(s.total), 0) FROM Sale s WHERE s.createdAt BETWEEN :startDate AND :endDate")
+    @Query("SELECT COALESCE(SUM(s.total), 0) FROM Sale s WHERE s.status <> 'CANCELED' AND s.createdAt BETWEEN :startDate AND :endDate")
     BigDecimal sumInvoicingByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

@@ -14,6 +14,9 @@ public record CreateProductDTO(
         @DecimalMin("0.01")
         BigDecimal costPrice,
 
+        @DecimalMin("0.01")
+        BigDecimal salePrice,
+
         @NotNull
         @Min(0)
         Integer stock){}

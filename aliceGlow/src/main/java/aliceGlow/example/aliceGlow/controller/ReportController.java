@@ -1,6 +1,8 @@
 package aliceGlow.example.aliceGlow.controller;
 
 import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
+import aliceGlow.example.aliceGlow.dto.product.ProductMarginDTO;
+import aliceGlow.example.aliceGlow.service.ProductService;
 import aliceGlow.example.aliceGlow.service.SaleService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import java.util.List;
 public class ReportController {
 
     private final SaleService saleService;
+    private final ProductService productService;
 
-    public ReportController(SaleService saleService) {
+    public ReportController(SaleService saleService, ProductService productService) {
         this.saleService = saleService;
+        this.productService = productService;
     }
 
     @GetMapping("/invoicing")
@@ -41,5 +45,10 @@ public class ReportController {
     @GetMapping("/top-products")
     public ResponseEntity<List<ProductSalesDTO>> topProducts() {
         return ResponseEntity.ok(saleService.listProductSales());
+    }
+
+    @GetMapping("/product-margins")
+    public ResponseEntity<List<ProductMarginDTO>> productMargins() {
+        return ResponseEntity.ok(productService.listProductMargins());
     }
 }

@@ -27,7 +27,13 @@ public class SaleItem {
     private BigDecimal unitPrice;
 
     @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal unitCostPrice;
+
+    @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal subtotal;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    private BigDecimal costSubtotal;
 
     public Long getId(){return id;}
     public void setId(Long id){this.id = id;}
@@ -44,6 +50,12 @@ public class SaleItem {
     public BigDecimal getUnitPrice(){return unitPrice;}
     public void setUnitPrice(BigDecimal unitPrice){this.unitPrice = unitPrice;}
 
+    public BigDecimal getUnitCostPrice(){return unitCostPrice;}
+    public void setUnitCostPrice(BigDecimal unitCostPrice){this.unitCostPrice = unitCostPrice;}
+
     public BigDecimal getSubtotal(){return subtotal;}
     public void setSubtotal(BigDecimal subtotal){this.subtotal = subtotal;}
+
+    public BigDecimal getCostSubtotal(){return costSubtotal;}
+    public void setCostSubtotal(BigDecimal costSubtotal){this.costSubtotal = costSubtotal;}
 }

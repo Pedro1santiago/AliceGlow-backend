@@ -42,6 +42,8 @@ class SaleControllerTest {
                 LocalDateTime.now(),
                 "Diana",
                 new BigDecimal("100.00"),
+            new BigDecimal("60.00"),
+            new BigDecimal("40.00"),
                 SaleStatus.PENDING,
                 PaymentMethod.PIX,
                 null,
@@ -51,7 +53,7 @@ class SaleControllerTest {
         createSaleDTO = new CreateSaleDTO(
                 "Diana",
                 PaymentMethod.PIX,
-                List.of(new CreateSaleItemDTO(1L, 2))
+            List.of(new CreateSaleItemDTO(1L, 2, new BigDecimal("80.00")))
         );
     }
 

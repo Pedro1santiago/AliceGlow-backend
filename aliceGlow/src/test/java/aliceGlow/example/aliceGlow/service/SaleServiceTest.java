@@ -45,7 +45,7 @@ class SaleServiceTest {
         CreateSaleDTO dto = new CreateSaleDTO(
                 "Diana",
                 PaymentMethod.PIX,
-                List.of(new CreateSaleItemDTO(productId, 2))
+            List.of(new CreateSaleItemDTO(productId, 2, new BigDecimal("80.00")))
         );
 
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
@@ -54,7 +54,9 @@ class SaleServiceTest {
         SaleDTO result = saleService.sale(dto);
 
         assertEquals("Diana", result.client());
-        assertEquals(new BigDecimal("100.00"), result.total());
+        assertEquals(new BigDecimal("160.00"), result.total());
+        assertEquals(new BigDecimal("100.00"), result.costTotal());
+        assertEquals(new BigDecimal("60.00"), result.profit());
         assertEquals(SaleStatus.PENDING, result.status());
     }
 
@@ -103,7 +105,7 @@ class SaleServiceTest {
         CreateSaleDTO dto = new CreateSaleDTO(
                 "Diana",
                 PaymentMethod.PIX,
-                List.of(new CreateSaleItemDTO(1L, 2))
+            List.of(new CreateSaleItemDTO(1L, 2, new BigDecimal("80.00")))
         );
 
         assertThrows(ProductNotFoundException.class,

@@ -40,18 +40,21 @@ class ProductControllerTest {
                 1L,
                 "Base Líquida Matte",
                 new BigDecimal("79.90"),
+            new BigDecimal("129.90"),
                 15
         );
 
         createProductDTO = new CreateProductDTO(
                 "Base Líquida Glow",
                 new BigDecimal("89.90"),
+            new BigDecimal("139.90"),
                 20
         );
 
         updateProductDTO = new UpdateProductDTO(
                 "Base Líquida Premium",
                 new BigDecimal("99.90"),
+            new BigDecimal("149.90"),
                 25
         );
     }

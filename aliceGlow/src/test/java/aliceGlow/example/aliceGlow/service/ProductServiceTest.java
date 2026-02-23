@@ -68,6 +68,7 @@ class ProductServiceTest {
         CreateProductDTO dto = new CreateProductDTO(
                 "Base Líquida Matte",
                 new BigDecimal("79.90"),
+                new BigDecimal("129.90"),
                 15
         );
 
@@ -75,6 +76,7 @@ class ProductServiceTest {
         productSaved.setId(1L);
         productSaved.setName("Base Líquida Matte");
         productSaved.setCostPrice(new BigDecimal("79.90"));
+        productSaved.setSalePrice(new BigDecimal("129.90"));
         productSaved.setStock(15);
 
         when(productRepository.save(any(Product.class)))
@@ -85,6 +87,7 @@ class ProductServiceTest {
         assertNotNull(result);
         assertEquals("Base Líquida Matte", result.name());
         assertEquals(new BigDecimal("79.90"), result.costPrice());
+        assertEquals(new BigDecimal("129.90"), result.salePrice());
         assertEquals(15, result.stock());
 
         verify(productRepository).save(any(Product.class));
@@ -98,6 +101,7 @@ class ProductServiceTest {
         UpdateProductDTO dto = new UpdateProductDTO(
                 "Base Líquida Glow",
                 new BigDecimal("89.90"),
+                new BigDecimal("139.90"),
                 30
         );
 
@@ -105,12 +109,14 @@ class ProductServiceTest {
         existingProduct.setId(productId);
         existingProduct.setName("Base Líquida Matte");
         existingProduct.setCostPrice(new BigDecimal("79.90"));
+        existingProduct.setSalePrice(new BigDecimal("129.90"));
         existingProduct.setStock(15);
 
         Product updatedProduct = new Product();
         updatedProduct.setId(productId);
         updatedProduct.setName("Base Líquida Glow");
         updatedProduct.setCostPrice(new BigDecimal("89.90"));
+        updatedProduct.setSalePrice(new BigDecimal("139.90"));
         updatedProduct.setStock(30);
 
         when(productRepository.findById(productId))
@@ -123,6 +129,7 @@ class ProductServiceTest {
         assertNotNull(result);
         assertEquals("Base Líquida Glow", result.name());
         assertEquals(new BigDecimal("89.90"), result.costPrice());
+        assertEquals(new BigDecimal("139.90"), result.salePrice());
         assertEquals(30, result.stock());
 
         verify(productRepository).findById(productId);
@@ -157,6 +164,7 @@ class ProductServiceTest {
         UpdateProductDTO updateProduct = new UpdateProductDTO(
                 "Base Líquida Matte",
                 new BigDecimal("80.00"),
+                new BigDecimal("130.00"),
                 20
         );
         when(productRepository.findById(productId))
@@ -183,6 +191,7 @@ class ProductServiceTest {
         UpdateProductDTO product = new UpdateProductDTO(
                 "Mouse Gamer",
                 new BigDecimal("-120.00"),
+                new BigDecimal("200.00"),
                 15
         );
 

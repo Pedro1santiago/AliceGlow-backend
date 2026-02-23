@@ -7,5 +7,7 @@ public record UpdateProductDTO(
 
         BigDecimal costPrice,
 
+        BigDecimal salePrice,
+
         Integer stock
 ){}

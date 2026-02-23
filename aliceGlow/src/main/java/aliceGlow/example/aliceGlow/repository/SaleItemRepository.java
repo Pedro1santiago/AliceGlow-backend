@@ -11,10 +11,11 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
 
     @Query("""
     SELECT COALESCE(
-        SUM(item.subtotal - (item.quantity * p.costPrice)), 0
+        SUM(item.subtotal - item.costSubtotal), 0
     )
     FROM SaleItem item
-    JOIN item.product p
+    JOIN item.sale s
+    WHERE s.status <> 'CANCELED'
     """)
     BigDecimal calculateTotalProfit();
 
@@ -22,6 +23,8 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
     SELECT p.name, SUM(si.quantity) 
     FROM SaleItem si
     JOIN si.product p
+    JOIN si.sale s
+    WHERE s.status <> 'CANCELED'
     GROUP BY p.name
     ORDER BY SUM(si.quantity) DESC
     """)
