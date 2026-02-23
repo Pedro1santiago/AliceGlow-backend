@@ -20,7 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) {
 
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailWithPerfils(email)
                 .orElseThrow(UserNotFoundException::new);
 
         return org.springframework.security.core.userdetails.User.builder()
@@ -31,6 +31,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                         .toArray(String[]::new))
                 .build();
     }
-
-
 }
