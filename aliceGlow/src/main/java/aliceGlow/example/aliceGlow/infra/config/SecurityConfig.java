@@ -46,8 +46,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "http://localhost:8080",
-            "http://localhost:5173",
+                "https://aliceglowfrontend.vercel.app",
                 "https://aliceglow-backend.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
