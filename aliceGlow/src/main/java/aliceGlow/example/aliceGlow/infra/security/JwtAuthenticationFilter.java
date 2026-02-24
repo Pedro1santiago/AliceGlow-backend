@@ -1,5 +1,6 @@
 package aliceGlow.example.aliceGlow.infra.security;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.lang.NonNull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -45,7 +46,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         jwt = authHeader.substring(7);
-        username = jwtService.extractUsername(jwt);
+        try {
+            username = jwtService.extractUsername(jwt);
+        } catch (JwtException ex) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
 

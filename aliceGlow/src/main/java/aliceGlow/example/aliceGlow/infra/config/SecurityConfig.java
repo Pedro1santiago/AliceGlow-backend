@@ -16,6 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.*;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @Configuration
@@ -75,6 +76,8 @@ public class SecurityConfig {
 
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
+                    .requestMatchers("/error").permitAll()
+
                         .requestMatchers("/auth/**").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/products/**")
@@ -112,6 +115,14 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
+
+                    .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"message\":\"Unauthorized\"}");
+                        })
+                    )
 
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
