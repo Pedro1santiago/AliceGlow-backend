@@ -62,12 +62,28 @@ class SaleControllerTest {
 
         when(saleService.listSales()).thenReturn(List.of(saleDTO));
 
-        ResponseEntity<List<SaleDTO>> response = saleController.listSales();
+        ResponseEntity<List<SaleDTO>> response = saleController.listSales(null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
 
         verify(saleService).listSales();
+    }
+
+    @Test
+    void shouldListSalesByPeriodSuccessfully() {
+
+        when(saleService.listSalesByPeriod(any(), any())).thenReturn(List.of(saleDTO));
+
+        ResponseEntity<List<SaleDTO>> response = saleController.listSales(
+                LocalDateTime.of(2026, 2, 1, 0, 0),
+                LocalDateTime.of(2026, 2, 28, 23, 59)
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().size());
+
+        verify(saleService).listSalesByPeriod(any(), any());
     }
 
     @Test

@@ -44,6 +44,13 @@ public class SaleService {
                 .toList();
     }
 
+    public List<SaleDTO> listSalesByPeriod(LocalDateTime start, LocalDateTime end) {
+        return saleRepository.findAllByCreatedAtBetween(start, end)
+                .stream()
+                .map(SaleDTO::toDTO)
+                .toList();
+    }
+
     public SaleDTO findById(Long id) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(SaleNotFoundException::new);

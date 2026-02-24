@@ -7,7 +7,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -21,8 +23,17 @@ public class SaleController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SaleDTO>> listSales() {
-        return ResponseEntity.ok(saleService.listSales());
+    public ResponseEntity<List<SaleDTO>> listSales(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
+    ) {
+        if (start == null && end == null) {
+            return ResponseEntity.ok(saleService.listSales());
+        }
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("Both start and end must be provided");
+        }
+        return ResponseEntity.ok(saleService.listSalesByPeriod(start, end));
     }
 
     @GetMapping("/{id}")
