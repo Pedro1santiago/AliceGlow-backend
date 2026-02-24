@@ -7,6 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
@@ -49,4 +52,30 @@ class StockPurchaseControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
     }
+
+        @Test
+        void shouldListPageByStartEnd() {
+        Page<StockPurchaseDTO> page = new PageImpl<>(
+            List.of(new StockPurchaseDTO(1L, LocalDate.of(2026, 2, 2), "X", null)),
+            PageRequest.of(0, 20),
+            1
+        );
+
+        when(stockPurchaseService.listByPeriodPage(
+            eq(LocalDate.of(2026, 2, 1)),
+            eq(LocalDate.of(2026, 2, 28)),
+            eq(PageRequest.of(0, 20))
+        )).thenReturn(page);
+
+        var response = stockPurchaseController.listPage(
+            LocalDate.of(2026, 2, 1),
+            LocalDate.of(2026, 2, 28),
+            null,
+            null,
+            PageRequest.of(0, 20)
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getTotalElements());
+        }
 }

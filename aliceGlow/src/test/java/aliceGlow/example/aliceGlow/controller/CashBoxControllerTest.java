@@ -11,6 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
@@ -39,6 +42,55 @@ class CashBoxControllerTest {
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals(1L, response.getBody().id());
+    }
+
+    @Test
+    void shouldFindCashBoxById() {
+        CashBoxDTO dto = new CashBoxDTO(1L, LocalDate.of(2026, 2, 1), new BigDecimal("10.00"), null, null, List.of());
+        when(cashBoxService.findById(1L)).thenReturn(dto);
+
+        var response = cashBoxController.findById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1L, response.getBody().id());
+    }
+
+    @Test
+    void shouldFindCashBoxByBusinessDate() {
+        LocalDate date = LocalDate.of(2026, 2, 1);
+        CashBoxDTO dto = new CashBoxDTO(1L, date, new BigDecimal("10.00"), null, null, List.of());
+        when(cashBoxService.findByBusinessDate(date)).thenReturn(dto);
+
+        var response = cashBoxController.findByBusinessDate(date);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(date, response.getBody().businessDate());
+    }
+
+    @Test
+    void shouldListAllCashBoxes() {
+        CashBoxDTO dto1 = new CashBoxDTO(1L, LocalDate.of(2026, 2, 2), new BigDecimal("20.00"), null, null, List.of());
+        CashBoxDTO dto2 = new CashBoxDTO(2L, LocalDate.of(2026, 2, 1), new BigDecimal("10.00"), null, null, List.of());
+        when(cashBoxService.listAll()).thenReturn(List.of(dto1, dto2));
+
+        var response = cashBoxController.listAll();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+        assertEquals(1L, response.getBody().get(0).id());
+    }
+
+    @Test
+    void shouldListAllCashBoxesPage() {
+        CashBoxDTO dto1 = new CashBoxDTO(1L, LocalDate.of(2026, 2, 2), new BigDecimal("20.00"), null, null, List.of());
+        Page<CashBoxDTO> page = new PageImpl<>(List.of(dto1), PageRequest.of(0, 20), 1);
+        when(cashBoxService.listAllPage(PageRequest.of(0, 20))).thenReturn(page);
+
+        var response = cashBoxController.listAllPage(PageRequest.of(0, 20));
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getTotalElements());
+        assertEquals(1L, response.getBody().getContent().get(0).id());
     }
 
     @Test

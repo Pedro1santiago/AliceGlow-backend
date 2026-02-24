@@ -5,6 +5,10 @@ import aliceGlow.example.aliceGlow.dto.user.UpdateUserDTO;
 import aliceGlow.example.aliceGlow.dto.user.UserDTO;
 import aliceGlow.example.aliceGlow.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +34,13 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDTO>> listUsers() {
         return ResponseEntity.ok(userService.listUsers());
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<UserDTO>> listUsersPage(
+            @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ResponseEntity.ok(userService.listUsersPage(pageable));
     }
 
     @PutMapping("/{id}")

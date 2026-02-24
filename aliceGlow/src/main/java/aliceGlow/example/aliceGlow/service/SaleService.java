@@ -12,6 +12,8 @@ import aliceGlow.example.aliceGlow.exception.SaleWithoutItemsException;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import aliceGlow.example.aliceGlow.repository.SaleItemRepository;
 import aliceGlow.example.aliceGlow.repository.SaleRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -44,11 +46,19 @@ public class SaleService {
                 .toList();
     }
 
+    public Page<SaleDTO> listSalesPage(Pageable pageable) {
+        return saleRepository.findAll(pageable).map(SaleDTO::toDTO);
+    }
+
     public List<SaleDTO> listSalesByPeriod(LocalDateTime start, LocalDateTime end) {
         return saleRepository.findAllByCreatedAtBetween(start, end)
                 .stream()
                 .map(SaleDTO::toDTO)
                 .toList();
+    }
+
+    public Page<SaleDTO> listSalesByPeriodPage(LocalDateTime start, LocalDateTime end, Pageable pageable) {
+        return saleRepository.findAllByCreatedAtBetween(start, end, pageable).map(SaleDTO::toDTO);
     }
 
     public SaleDTO findById(Long id) {

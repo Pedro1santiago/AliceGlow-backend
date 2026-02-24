@@ -8,6 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
@@ -55,5 +58,26 @@ class StockPurchaseServiceTest {
 
         assertEquals(1, result.size());
         assertEquals(1L, result.get(0).id());
+    }
+
+    @Test
+    void shouldListStockPurchasesByPeriodPage() {
+        StockPurchase p1 = new StockPurchase();
+        ReflectionTestUtils.setField(p1, "id", 1L);
+        p1.setPurchaseDate(LocalDate.of(2026, 2, 2));
+        p1.setDescription("Restock");
+
+        Page<StockPurchase> page = new PageImpl<>(List.of(p1), PageRequest.of(0, 20), 1);
+        when(stockPurchaseRepository.findAllByPurchaseDateBetween(any(), any(), eq(PageRequest.of(0, 20))))
+                .thenReturn(page);
+
+        var result = stockPurchaseService.listByPeriodPage(
+                LocalDate.of(2026, 2, 1),
+                LocalDate.of(2026, 2, 28),
+                PageRequest.of(0, 20)
+        );
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1L, result.getContent().get(0).id());
     }
 }

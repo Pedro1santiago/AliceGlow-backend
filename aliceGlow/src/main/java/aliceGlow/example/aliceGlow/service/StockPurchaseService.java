@@ -4,6 +4,8 @@ import aliceGlow.example.aliceGlow.domain.StockPurchase;
 import aliceGlow.example.aliceGlow.dto.stockPurchase.CreateStockPurchaseDTO;
 import aliceGlow.example.aliceGlow.dto.stockPurchase.StockPurchaseDTO;
 import aliceGlow.example.aliceGlow.repository.StockPurchaseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -30,5 +32,10 @@ public class StockPurchaseService {
                 .stream()
                 .map(StockPurchaseDTO::toDTO)
                 .toList();
+    }
+
+    public Page<StockPurchaseDTO> listByPeriodPage(LocalDate start, LocalDate end, Pageable pageable) {
+        return stockPurchaseRepository.findAllByPurchaseDateBetween(start, end, pageable)
+                .map(StockPurchaseDTO::toDTO);
     }
 }

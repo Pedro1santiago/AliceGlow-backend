@@ -12,6 +12,8 @@ import aliceGlow.example.aliceGlow.exception.SalePriceCannotBeNegativeException;
 import aliceGlow.example.aliceGlow.exception.StockNegativeException;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -38,6 +40,18 @@ public class ProductService {
         }
 
         return products.stream().map(ProductDTO::toDTO).toList();
+    }
+
+    public Page<ProductDTO> listProductsPage(Boolean active, boolean includeInactive, Pageable pageable) {
+        if (includeInactive) {
+            return productRepository.findAll(pageable).map(ProductDTO::toDTO);
+        }
+
+        if (active == null) {
+            return productRepository.findAllByActiveTrue(pageable).map(ProductDTO::toDTO);
+        }
+
+        return productRepository.findAllByActive(active, pageable).map(ProductDTO::toDTO);
     }
 
         public List<ProductMarginDTO> listProductMargins() {

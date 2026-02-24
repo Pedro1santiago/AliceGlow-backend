@@ -1,6 +1,8 @@
 package aliceGlow.example.aliceGlow.repository;
 
 import aliceGlow.example.aliceGlow.domain.Sale;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,6 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     BigDecimal sumInvoicingByPeriod(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 
     List<Sale> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+
+    Page<Sale> findAllByCreatedAtBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 }

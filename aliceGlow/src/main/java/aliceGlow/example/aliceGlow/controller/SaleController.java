@@ -4,6 +4,10 @@ import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
 import aliceGlow.example.aliceGlow.service.SaleService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +38,21 @@ public class SaleController {
             throw new IllegalArgumentException("Both start and end must be provided");
         }
         return ResponseEntity.ok(saleService.listSalesByPeriod(start, end));
+    }
+
+    @GetMapping("/page")
+    public ResponseEntity<Page<SaleDTO>> listSalesPage(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+                @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        if (start == null && end == null) {
+            return ResponseEntity.ok(saleService.listSalesPage(pageable));
+        }
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("Both start and end must be provided");
+        }
+        return ResponseEntity.ok(saleService.listSalesByPeriodPage(start, end, pageable));
     }
 
     @GetMapping("/{id}")

@@ -11,11 +11,14 @@ import aliceGlow.example.aliceGlow.exception.CashBoxAlreadyExistsForDateExceptio
 import aliceGlow.example.aliceGlow.exception.CashBoxNotFoundException;
 import aliceGlow.example.aliceGlow.repository.CashBoxRepository;
 import aliceGlow.example.aliceGlow.repository.CashOutflowRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class CashBoxService {
@@ -51,6 +54,19 @@ public class CashBoxService {
         CashBox cashBox = cashBoxRepository.findByBusinessDate(businessDate)
                 .orElseThrow(CashBoxNotFoundException::new);
         return CashBoxDTO.toDTO(cashBox);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CashBoxDTO> listAll() {
+        return cashBoxRepository.findAllByOrderByBusinessDateDesc()
+                .stream()
+                .map(CashBoxDTO::toDTO)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CashBoxDTO> listAllPage(Pageable pageable) {
+        return cashBoxRepository.findAllByOrderByBusinessDateDesc(pageable).map(CashBoxDTO::toDTO);
     }
 
     @Transactional

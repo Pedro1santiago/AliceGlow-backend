@@ -10,6 +10,8 @@ import aliceGlow.example.aliceGlow.exception.EmailAlreadyExistsException;
 import aliceGlow.example.aliceGlow.exception.UserNotFoundException;
 import aliceGlow.example.aliceGlow.repository.PerfilRepository;
 import aliceGlow.example.aliceGlow.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -34,6 +36,10 @@ public class UserService {
                 .stream()
                 .map(UserDTO::toDTO)
                 .toList();
+    }
+
+    public Page<UserDTO> listUsersPage(Pageable pageable) {
+        return userRepository.findAll(pageable).map(UserDTO::toDTO);
     }
 
     public UserDTO createUser(CreateUserDTO createUserDTO) {

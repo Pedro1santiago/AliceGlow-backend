@@ -11,6 +11,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -76,6 +79,18 @@ class UserControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
         verify(userService).listUsers();
+    }
+
+    @Test
+    void shouldListUsersPageSuccessfully() {
+        Page<UserDTO> page = new PageImpl<>(List.of(userDTO), PageRequest.of(0, 20), 1);
+        when(userService.listUsersPage(PageRequest.of(0, 20))).thenReturn(page);
+
+        ResponseEntity<Page<UserDTO>> response = userController.listUsersPage(PageRequest.of(0, 20));
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getTotalElements());
+        verify(userService).listUsersPage(PageRequest.of(0, 20));
     }
 
     @Test

@@ -14,10 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,6 +63,47 @@ class CashBoxServiceTest {
         var dto = new CreateCashBoxDTO(businessDate, new BigDecimal("100.00"));
         assertThrows(CashBoxAlreadyExistsForDateException.class, () -> cashBoxService.create(dto));
         verify(cashBoxRepository, never()).save(any());
+    }
+
+    @Test
+    void shouldListAllCashBoxes() {
+        CashBox cb1 = new CashBox();
+        ReflectionTestUtils.setField(cb1, "id", 1L);
+        cb1.setBusinessDate(LocalDate.of(2026, 2, 2));
+        cb1.setBalance(new BigDecimal("20.00"));
+
+        CashBox cb2 = new CashBox();
+        ReflectionTestUtils.setField(cb2, "id", 2L);
+        cb2.setBusinessDate(LocalDate.of(2026, 2, 1));
+        cb2.setBalance(new BigDecimal("10.00"));
+
+        when(cashBoxRepository.findAllByOrderByBusinessDateDesc())
+                .thenReturn(List.of(cb1, cb2));
+
+        var result = cashBoxService.listAll();
+
+        assertEquals(2, result.size());
+        assertEquals(1L, result.get(0).id());
+        assertEquals(LocalDate.of(2026, 2, 2), result.get(0).businessDate());
+        verify(cashBoxRepository).findAllByOrderByBusinessDateDesc();
+    }
+
+    @Test
+    void shouldListAllCashBoxesPage() {
+        CashBox cb1 = new CashBox();
+        ReflectionTestUtils.setField(cb1, "id", 1L);
+        cb1.setBusinessDate(LocalDate.of(2026, 2, 2));
+        cb1.setBalance(new BigDecimal("20.00"));
+
+        Page<CashBox> page = new PageImpl<>(List.of(cb1), PageRequest.of(0, 20), 1);
+        when(cashBoxRepository.findAllByOrderByBusinessDateDesc(PageRequest.of(0, 20)))
+                .thenReturn(page);
+
+        var result = cashBoxService.listAllPage(PageRequest.of(0, 20));
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals(1L, result.getContent().get(0).id());
+        verify(cashBoxRepository).findAllByOrderByBusinessDateDesc(PageRequest.of(0, 20));
     }
 
     @Test

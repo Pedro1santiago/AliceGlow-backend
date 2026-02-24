@@ -12,6 +12,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -20,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,6 +75,18 @@ class SaleControllerTest {
     }
 
     @Test
+    void shouldListSalesPageSuccessfully() {
+        Page<SaleDTO> page = new PageImpl<>(List.of(saleDTO), PageRequest.of(0, 20), 1);
+        when(saleService.listSalesPage(PageRequest.of(0, 20))).thenReturn(page);
+
+        ResponseEntity<Page<SaleDTO>> response = saleController.listSalesPage(null, null, PageRequest.of(0, 20));
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getTotalElements());
+        verify(saleService).listSalesPage(PageRequest.of(0, 20));
+    }
+
+    @Test
     void shouldListSalesByPeriodSuccessfully() {
 
         when(saleService.listSalesByPeriod(any(), any())).thenReturn(List.of(saleDTO));
@@ -84,6 +100,22 @@ class SaleControllerTest {
         assertEquals(1, response.getBody().size());
 
         verify(saleService).listSalesByPeriod(any(), any());
+    }
+
+    @Test
+    void shouldListSalesByPeriodPageSuccessfully() {
+        Page<SaleDTO> page = new PageImpl<>(List.of(saleDTO), PageRequest.of(0, 20), 1);
+        when(saleService.listSalesByPeriodPage(any(), any(), eq(PageRequest.of(0, 20)))).thenReturn(page);
+
+        ResponseEntity<Page<SaleDTO>> response = saleController.listSalesPage(
+                LocalDateTime.of(2026, 2, 1, 0, 0),
+                LocalDateTime.of(2026, 2, 28, 23, 59),
+                PageRequest.of(0, 20)
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().getTotalElements());
+        verify(saleService).listSalesByPeriodPage(any(), any(), eq(PageRequest.of(0, 20)));
     }
 
     @Test
