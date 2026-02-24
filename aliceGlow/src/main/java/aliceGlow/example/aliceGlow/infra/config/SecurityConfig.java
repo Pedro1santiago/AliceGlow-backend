@@ -46,6 +46,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:8080",
+            "http://localhost:5173",
                 "https://aliceglow-backend.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
@@ -71,6 +72,8 @@ public class SecurityConfig {
                 )
 
                 .authorizeHttpRequests(auth -> auth
+
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
                         .requestMatchers("/auth/**").permitAll()
 
@@ -99,6 +102,12 @@ public class SecurityConfig {
                         .hasRole("ADMIN")
 
                         .requestMatchers("/reports/**")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers("/cash-boxes/**")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers("/stock-purchases/**")
                         .hasRole("ADMIN")
 
                         .anyRequest().authenticated()

@@ -18,6 +18,7 @@ public class ApiExceptionHandler {
             ProductNotFoundException.class,
             SaleNotFoundException.class,
             UserNotFoundException.class
+            , CashBoxNotFoundException.class
     })
     public ProblemDetail handleNotFound(RuntimeException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
@@ -28,6 +29,14 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ProblemDetail handleConflict(RuntimeException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        pd.setTitle("Conflict");
+        pd.setDetail(ex.getMessage());
+        return pd;
+    }
+
+    @ExceptionHandler(CashBoxAlreadyExistsForDateException.class)
+    public ProblemDetail handleCashBoxConflict(RuntimeException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
         pd.setTitle("Conflict");
         pd.setDetail(ex.getMessage());
