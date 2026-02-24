@@ -2,6 +2,7 @@ package aliceGlow.example.aliceGlow.controller;
 
 import aliceGlow.example.aliceGlow.dto.sale.ProductSalesDTO;
 import aliceGlow.example.aliceGlow.dto.product.ProductMarginDTO;
+import aliceGlow.example.aliceGlow.dto.product.ProductSalesStatusSummaryDTO;
 import aliceGlow.example.aliceGlow.dto.product.ProductSoldStatusDTO;
 import aliceGlow.example.aliceGlow.dto.cashOutflow.CashOutflowReportDTO;
 import aliceGlow.example.aliceGlow.service.ProductService;
@@ -37,15 +38,29 @@ public class ReportController {
 
     @GetMapping("/invoicing/period")
     public ResponseEntity<BigDecimal> invoicingByPeriod(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year
     ) {
-        return ResponseEntity.ok(saleService.invoicingByPeriod(start, end));
+        ReportQueryPeriod period = ReportQueryPeriod.from(start, end, month, year);
+        return ResponseEntity.ok(saleService.invoicingByPeriod(period.start(), period.end()));
     }
 
     @GetMapping("/profit")
     public ResponseEntity<BigDecimal> profit() {
         return ResponseEntity.ok(saleService.profit());
+    }
+
+    @GetMapping("/profit/period")
+    public ResponseEntity<BigDecimal> profitByPeriod(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year
+    ) {
+        ReportQueryPeriod period = ReportQueryPeriod.from(start, end, month, year);
+        return ResponseEntity.ok(saleService.profitByPeriod(period.start(), period.end()));
     }
 
     @GetMapping("/top-products")
@@ -67,6 +82,17 @@ public class ReportController {
     ) {
         ReportQueryPeriod period = ReportQueryPeriod.from(start, end, month, year);
         return ResponseEntity.ok(reportService.productsSoldStatus(period.start(), period.end()));
+    }
+
+    @GetMapping("/products/sales-status/summary")
+    public ResponseEntity<ProductSalesStatusSummaryDTO> productsSalesStatusSummary(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end,
+            @RequestParam(required = false) Integer month,
+            @RequestParam(required = false) Integer year
+    ) {
+        ReportQueryPeriod period = ReportQueryPeriod.from(start, end, month, year);
+        return ResponseEntity.ok(reportService.productsSoldStatusSummary(period.start(), period.end()));
     }
 
     @GetMapping("/cash-outflows")

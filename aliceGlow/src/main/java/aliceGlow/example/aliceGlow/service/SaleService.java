@@ -134,6 +134,10 @@ public class SaleService {
         return saleItemRepository.calculateTotalProfit();
     }
 
+    public BigDecimal profitByPeriod(LocalDateTime start, LocalDateTime end) {
+        return saleItemRepository.calculateTotalProfitByPeriod(start, end);
+    }
+
     public List<ProductSalesDTO> listProductSales() {
         return saleItemRepository.findTopSellingProducts()
                 .stream()

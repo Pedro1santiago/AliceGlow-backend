@@ -124,4 +124,17 @@ class SaleServiceTest {
         assertThrows(SaleWithoutItemsException.class,
                 () -> saleService.sale(dto));
     }
+
+    @Test
+    void shouldReturnProfitByPeriod() {
+        when(saleItemRepository.calculateTotalProfitByPeriod(any(), any()))
+                .thenReturn(new BigDecimal("123.45"));
+
+        BigDecimal result = saleService.profitByPeriod(
+                java.time.LocalDateTime.of(2026, 2, 1, 0, 0),
+                java.time.LocalDateTime.of(2026, 2, 28, 23, 59)
+        );
+
+        assertEquals(new BigDecimal("123.45"), result);
+    }
 }

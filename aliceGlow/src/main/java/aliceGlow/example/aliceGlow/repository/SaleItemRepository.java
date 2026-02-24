@@ -22,6 +22,20 @@ public interface SaleItemRepository extends JpaRepository<SaleItem, Long> {
     BigDecimal calculateTotalProfit();
 
     @Query("""
+        SELECT COALESCE(
+            SUM(item.subtotal - item.costSubtotal), 0
+        )
+        FROM SaleItem item
+        JOIN item.sale s
+        WHERE s.status <> 'CANCELED'
+          AND s.createdAt BETWEEN :start AND :end
+    """)
+    BigDecimal calculateTotalProfitByPeriod(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("""
     SELECT p.name, SUM(si.quantity) 
     FROM SaleItem si
     JOIN si.product p

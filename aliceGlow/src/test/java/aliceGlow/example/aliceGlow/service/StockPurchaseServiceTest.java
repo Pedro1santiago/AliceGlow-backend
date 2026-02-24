@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,8 +29,7 @@ class StockPurchaseServiceTest {
     void shouldCreateStockPurchase() {
         when(stockPurchaseRepository.save(any())).thenAnswer(i -> {
             StockPurchase p = i.getArgument(0);
-            p.setId(1L);
-            p.setCreatedAt(LocalDateTime.now());
+            ReflectionTestUtils.setField(p, "id", 1L);
             return p;
         });
 
@@ -44,7 +44,7 @@ class StockPurchaseServiceTest {
     @Test
     void shouldListStockPurchasesByPeriod() {
         StockPurchase p1 = new StockPurchase();
-        p1.setId(1L);
+        ReflectionTestUtils.setField(p1, "id", 1L);
         p1.setPurchaseDate(LocalDate.of(2026, 2, 2));
         p1.setDescription("Restock");
 

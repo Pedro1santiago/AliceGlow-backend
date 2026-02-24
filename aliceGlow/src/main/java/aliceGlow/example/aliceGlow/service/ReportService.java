@@ -4,6 +4,7 @@ import aliceGlow.example.aliceGlow.domain.Product;
 import aliceGlow.example.aliceGlow.dto.cashOutflow.CashOutflowDTO;
 import aliceGlow.example.aliceGlow.dto.cashOutflow.CashOutflowReportDTO;
 import aliceGlow.example.aliceGlow.dto.product.ProductSoldStatusDTO;
+import aliceGlow.example.aliceGlow.dto.product.ProductSalesStatusSummaryDTO;
 import aliceGlow.example.aliceGlow.repository.CashOutflowRepository;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import aliceGlow.example.aliceGlow.repository.SaleItemRepository;
@@ -45,6 +46,29 @@ public class ReportService {
                 .stream()
                 .map(product -> toSoldStatus(product, soldQuantityByProductId))
                 .toList();
+    }
+
+    public ProductSalesStatusSummaryDTO productsSoldStatusSummary(LocalDateTime start, LocalDateTime end) {
+        long soldProducts = 0;
+        long notSoldProducts = 0;
+
+        Map<Long, Long> soldQuantityByProductId = new HashMap<>();
+        for (Object[] row : saleItemRepository.sumSoldQuantityByProductIdBetween(start, end)) {
+            Long productId = (Long) row[0];
+            Long quantity = ((Number) row[1]).longValue();
+            soldQuantityByProductId.put(productId, quantity);
+        }
+
+        for (Product product : productRepository.findAll()) {
+            long qty = soldQuantityByProductId.getOrDefault(product.getId(), 0L);
+            if (qty > 0) {
+                soldProducts++;
+            } else {
+                notSoldProducts++;
+            }
+        }
+
+        return new ProductSalesStatusSummaryDTO(soldProducts, notSoldProducts);
     }
 
     private ProductSoldStatusDTO toSoldStatus(Product product, Map<Long, Long> soldQuantityByProductId) {

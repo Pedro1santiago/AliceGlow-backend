@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -38,9 +39,7 @@ class CashBoxServiceTest {
         when(cashBoxRepository.existsByBusinessDate(businessDate)).thenReturn(false);
         when(cashBoxRepository.save(any())).thenAnswer(i -> {
             CashBox cb = i.getArgument(0);
-            cb.setId(1L);
-            cb.setCreatedAt(LocalDateTime.now());
-            cb.setUpdatedAt(LocalDateTime.now());
+            ReflectionTestUtils.setField(cb, "id", 1L);
             return cb;
         });
 
@@ -65,15 +64,14 @@ class CashBoxServiceTest {
     @Test
     void shouldAddOutflowAndDecreaseBalance() {
         CashBox cashBox = new CashBox();
-        cashBox.setId(10L);
+        ReflectionTestUtils.setField(cashBox, "id", 10L);
         cashBox.setBalance(new BigDecimal("200.00"));
 
         when(cashBoxRepository.findById(10L)).thenReturn(Optional.of(cashBox));
         when(cashBoxRepository.save(any())).thenAnswer(i -> i.getArgument(0));
         when(cashOutflowRepository.save(any())).thenAnswer(i -> {
             CashOutflow outflow = i.getArgument(0);
-            outflow.setId(99L);
-            outflow.setCreatedAt(LocalDateTime.now());
+            ReflectionTestUtils.setField(outflow, "id", 99L);
             return outflow;
         });
 
