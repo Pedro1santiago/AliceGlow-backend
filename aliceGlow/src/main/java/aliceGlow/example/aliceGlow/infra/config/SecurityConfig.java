@@ -46,8 +46,8 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "https://aliceglowfrontend.vercel.app",
-                "https://aliceglow-backend.onrender.com"
+            "https://aliceglowfrontend.vercel.app",
+            "https://aliceglow-backend.onrender.com"
         ));
         config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
