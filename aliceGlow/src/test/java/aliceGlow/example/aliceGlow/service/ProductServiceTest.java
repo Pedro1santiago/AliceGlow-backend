@@ -4,6 +4,7 @@ import aliceGlow.example.aliceGlow.dto.product.CreateProductDTO;
 import aliceGlow.example.aliceGlow.dto.product.ProductDTO;
 import aliceGlow.example.aliceGlow.dto.product.UpdateProductDTO;
 import aliceGlow.example.aliceGlow.exception.CostPriceCannotBeNegativeException;
+import aliceGlow.example.aliceGlow.exception.ProductInUseException;
 import aliceGlow.example.aliceGlow.exception.ProductNotFoundException;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +48,7 @@ class ProductServiceTest {
                 .thenReturn(List.of(productOne, productTwo));
 
 
-        List<ProductDTO> result = productService.listProducts();
+        List<ProductDTO> result = productService.listProducts(null, true);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -54,10 +56,12 @@ class ProductServiceTest {
         assertEquals("Base Líquida Matte", result.get(0).name());
         assertEquals(new BigDecimal("79.70"), result.get(0).costPrice());
         assertEquals(15, result.get(0).stock());
+        assertTrue(result.get(0).active());
 
         assertEquals("Base Líquida Glow", result.get(1).name());
         assertEquals(new BigDecimal("89.90"), result.get(1).costPrice());
         assertEquals(30, result.get(1).stock());
+        assertTrue(result.get(1).active());
 
         verify(productRepository).findAll();
         verify(productRepository, never()).save(any());
@@ -89,6 +93,7 @@ class ProductServiceTest {
         assertEquals(new BigDecimal("79.90"), result.costPrice());
         assertEquals(new BigDecimal("129.90"), result.salePrice());
         assertEquals(15, result.stock());
+        assertTrue(result.active());
 
         verify(productRepository).save(any(Product.class));
     }
@@ -131,6 +136,7 @@ class ProductServiceTest {
         assertEquals(new BigDecimal("89.90"), result.costPrice());
         assertEquals(new BigDecimal("139.90"), result.salePrice());
         assertEquals(30, result.stock());
+        assertTrue(result.active());
 
         verify(productRepository).findById(productId);
         verify(productRepository).save(any(Product.class));
@@ -154,6 +160,98 @@ class ProductServiceTest {
 
         verify(productRepository).findById(productId);
         verify(productRepository).delete(product);
+    }
+
+    @Test
+    void shouldListOnlyActiveByDefaultWhenActiveIsNullAndIncludeInactiveFalse() {
+
+        Product activeProduct = new Product();
+        activeProduct.setName("Ativo");
+        activeProduct.setCostPrice(new BigDecimal("10.00"));
+        activeProduct.setSalePrice(new BigDecimal("20.00"));
+        activeProduct.setStock(1);
+        activeProduct.setActive(true);
+
+        when(productRepository.findAllByActiveTrue())
+                .thenReturn(List.of(activeProduct));
+
+        List<ProductDTO> result = productService.listProducts(null, false);
+
+        assertEquals(1, result.size());
+        assertTrue(result.get(0).active());
+        verify(productRepository).findAllByActiveTrue();
+        verify(productRepository, never()).findAllByActive(anyBoolean());
+        verify(productRepository, never()).findAll();
+    }
+
+    @Test
+    void shouldListInactiveWhenActiveFalse() {
+
+        Product inactiveProduct = new Product();
+        inactiveProduct.setName("Inativo");
+        inactiveProduct.setCostPrice(new BigDecimal("10.00"));
+        inactiveProduct.setSalePrice(new BigDecimal("20.00"));
+        inactiveProduct.setStock(0);
+        inactiveProduct.setActive(false);
+
+        when(productRepository.findAllByActive(false))
+                .thenReturn(List.of(inactiveProduct));
+
+        List<ProductDTO> result = productService.listProducts(false, false);
+
+        assertEquals(1, result.size());
+        assertFalse(result.get(0).active());
+        verify(productRepository).findAllByActive(false);
+        verify(productRepository, never()).findAllByActiveTrue();
+        verify(productRepository, never()).findAll();
+    }
+
+    @Test
+    void shouldDeactivateProduct() {
+        Long productId = 1L;
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setName("Produto");
+        product.setCostPrice(new BigDecimal("10.00"));
+        product.setSalePrice(new BigDecimal("20.00"));
+        product.setStock(1);
+        product.setActive(true);
+
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ProductDTO result = productService.deactivateProduct(productId);
+
+        assertFalse(result.active());
+        verify(productRepository).findById(productId);
+        verify(productRepository).save(any(Product.class));
+    }
+
+    @Test
+    void shouldActivateProduct() {
+        Long productId = 1L;
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setName("Produto");
+        product.setCostPrice(new BigDecimal("10.00"));
+        product.setSalePrice(new BigDecimal("20.00"));
+        product.setStock(1);
+        product.setActive(false);
+
+        when(productRepository.findById(productId))
+                .thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        ProductDTO result = productService.activateProduct(productId);
+
+        assertTrue(result.active());
+        verify(productRepository).findById(productId);
+        verify(productRepository).save(any(Product.class));
     }
 
     @Test
@@ -230,5 +328,34 @@ class ProductServiceTest {
         verify(productRepository).findById(productId);
         verify(productRepository, never()).delete(any());
     }
+
+        @Test
+        void shouldThrowProductInUseWhenDeleteReferencedBySaleItems() {
+
+                Long productId = 2L;
+
+                Product product = new Product();
+                product.setId(productId);
+                product.setName("Produto vendido");
+                product.setCostPrice(new BigDecimal("10.00"));
+                product.setStock(0);
+
+                when(productRepository.findById(productId))
+                                .thenReturn(Optional.of(product));
+
+                doThrow(new DataIntegrityViolationException("fk_sale_items_product"))
+                                .when(productRepository)
+                                .delete(product);
+
+                ProductInUseException exception = assertThrows(
+                                ProductInUseException.class,
+                                () -> productService.deleteProduct(productId)
+                );
+
+                assertTrue(exception.getMessage().contains("Product cannot be deleted"));
+
+                verify(productRepository).findById(productId);
+                verify(productRepository).delete(product);
+        }
 
 }

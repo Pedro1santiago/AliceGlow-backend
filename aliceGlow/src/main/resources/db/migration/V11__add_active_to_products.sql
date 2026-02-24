@@ -1,0 +1,4 @@
+ALTER TABLE products
+ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT TRUE;
+
+CREATE INDEX IF NOT EXISTS idx_products_active ON products(active);

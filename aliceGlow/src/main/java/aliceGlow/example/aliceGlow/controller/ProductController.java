@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -21,8 +22,11 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDTO>> listProducts(){
-        return ResponseEntity.ok(productService.listProducts());
+    public ResponseEntity<List<ProductDTO>> listProducts(
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = "false") boolean includeInactive
+    ){
+        return ResponseEntity.ok(productService.listProducts(active, includeInactive));
     }
 
     @PostMapping
@@ -45,5 +49,15 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<ProductDTO> activateProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.activateProduct(id));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<ProductDTO> deactivateProduct(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.deactivateProduct(id));
     }
 }

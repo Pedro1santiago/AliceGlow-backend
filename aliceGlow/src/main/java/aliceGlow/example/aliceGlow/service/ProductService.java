@@ -6,10 +6,12 @@ import aliceGlow.example.aliceGlow.dto.product.ProductDTO;
 import aliceGlow.example.aliceGlow.dto.product.ProductMarginDTO;
 import aliceGlow.example.aliceGlow.dto.product.UpdateProductDTO;
 import aliceGlow.example.aliceGlow.exception.CostPriceCannotBeNegativeException;
+import aliceGlow.example.aliceGlow.exception.ProductInUseException;
 import aliceGlow.example.aliceGlow.exception.ProductNotFoundException;
 import aliceGlow.example.aliceGlow.exception.SalePriceCannotBeNegativeException;
 import aliceGlow.example.aliceGlow.exception.StockNegativeException;
 import aliceGlow.example.aliceGlow.repository.ProductRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -24,11 +26,18 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public List<ProductDTO> listProducts(){
-        return productRepository.findAll()
-                .stream()
-                .map(ProductDTO::toDTO)
-                .toList();
+    public List<ProductDTO> listProducts(Boolean active, boolean includeInactive){
+        List<Product> products;
+
+        if (includeInactive) {
+            products = productRepository.findAll();
+        } else if (active == null) {
+            products = productRepository.findAllByActiveTrue();
+        } else {
+            products = productRepository.findAllByActive(active);
+        }
+
+        return products.stream().map(ProductDTO::toDTO).toList();
     }
 
         public List<ProductMarginDTO> listProductMargins() {
@@ -73,6 +82,7 @@ public class ProductService {
         product.setCostPrice(createProductDTO.costPrice());
         product.setSalePrice(createProductDTO.salePrice());
         product.setStock(createProductDTO.stock());
+        product.setActive(true);
 
         Product savedProduct = productRepository.save(product);
 
@@ -114,10 +124,30 @@ public class ProductService {
         return ProductDTO.toDTO(updatedProduct);
     }
 
+    public ProductDTO activateProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(ProductNotFoundException::new);
+
+        product.setActive(true);
+        return ProductDTO.toDTO(productRepository.save(product));
+    }
+
+    public ProductDTO deactivateProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(ProductNotFoundException::new);
+
+        product.setActive(false);
+        return ProductDTO.toDTO(productRepository.save(product));
+    }
+
     public void deleteProduct(Long id){
         Product product = productRepository.findById(id)
                 .orElseThrow(ProductNotFoundException::new);
 
-        productRepository.delete(product);
+        try {
+            productRepository.delete(product);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ProductInUseException(id);
+        }
     }
 }

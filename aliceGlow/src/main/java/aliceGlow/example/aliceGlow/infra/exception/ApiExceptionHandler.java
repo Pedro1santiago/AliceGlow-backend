@@ -35,6 +35,14 @@ public class ApiExceptionHandler {
         return pd;
     }
 
+    @ExceptionHandler(ProductInUseException.class)
+    public ProblemDetail handleProductInUse(ProductInUseException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        pd.setTitle("Conflict");
+        pd.setDetail(ex.getMessage());
+        return pd;
+    }
+
     @ExceptionHandler(CashBoxAlreadyExistsForDateException.class)
     public ProblemDetail handleCashBoxConflict(RuntimeException ex) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);

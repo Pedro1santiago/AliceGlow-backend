@@ -40,8 +40,9 @@ class ProductControllerTest {
                 1L,
                 "Base Líquida Matte",
                 new BigDecimal("79.90"),
-            new BigDecimal("129.90"),
+                new BigDecimal("129.90"),
                 15
+                , true
         );
 
         createProductDTO = new CreateProductDTO(
@@ -61,13 +62,13 @@ class ProductControllerTest {
 
     @Test
     void shouldListProductsSuccessfully() {
-        when(productService.listProducts()).thenReturn(List.of(productDTO));
+        when(productService.listProducts(null, false)).thenReturn(List.of(productDTO));
 
-        ResponseEntity<List<ProductDTO>> response = productController.listProducts();
+        ResponseEntity<List<ProductDTO>> response = productController.listProducts(null, false);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        verify(productService).listProducts();
+        verify(productService).listProducts(null, false);
     }
 
     @Test
@@ -98,5 +99,36 @@ class ProductControllerTest {
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(productService).deleteProduct(1L);
+    }
+
+    @Test
+    void shouldActivateProductSuccessfully() {
+        when(productService.activateProduct(1L)).thenReturn(productDTO);
+
+        ResponseEntity<ProductDTO> response = productController.activateProduct(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertTrue(response.getBody().active());
+        verify(productService).activateProduct(1L);
+    }
+
+    @Test
+    void shouldDeactivateProductSuccessfully() {
+        ProductDTO inactive = new ProductDTO(
+                1L,
+                "Base Líquida Matte",
+                new BigDecimal("79.90"),
+                new BigDecimal("129.90"),
+                15,
+                false
+        );
+
+        when(productService.deactivateProduct(1L)).thenReturn(inactive);
+
+        ResponseEntity<ProductDTO> response = productController.deactivateProduct(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertFalse(response.getBody().active());
+        verify(productService).deactivateProduct(1L);
     }
 }
