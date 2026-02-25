@@ -4,6 +4,7 @@ import aliceGlow.example.aliceGlow.infra.security.JwtAuthenticationFilter;
 import aliceGlow.example.aliceGlow.infra.filter.CorrelationIdFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.MDC;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -53,6 +54,19 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    /**
+     * Prevents CorrelationIdFilter from being auto-registered as a servlet filter.
+     * It's explicitly added to the Spring Security filter chain to guarantee ordering.
+     */
+    @Bean
+    public FilterRegistrationBean<CorrelationIdFilter> correlationIdFilterRegistration(
+            CorrelationIdFilter correlationIdFilter
+    ) {
+        FilterRegistrationBean<CorrelationIdFilter> registration = new FilterRegistrationBean<>(correlationIdFilter);
+        registration.setEnabled(false);
+        return registration;
     }
 
     @Bean
