@@ -125,7 +125,7 @@ cd AliceGlow-backend/aliceGlow
 ./mvnw spring-boot:run
 ```
 
-Por padrão, ao rodar localmente a API fica em `http://localhost:8080`.
+Após iniciar, use a base URL do ambiente (por exemplo, a URL de produção no Render).
 
 ## Documentação da API (Swagger/OpenAPI)
 
