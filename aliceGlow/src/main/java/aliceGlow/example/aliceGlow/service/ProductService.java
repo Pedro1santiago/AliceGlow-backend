@@ -48,13 +48,26 @@ public class ProductService {
     /**
      * Lists products with pagination applying the active filter and the include-inactive option.
      */
-    public Page<ProductDTO> listProductsPage(Boolean active, boolean includeInactive, Pageable pageable) {
+    public Page<ProductDTO> listProductsPage(Boolean active, boolean includeInactive, String query, Pageable pageable) {
+        String q = (query == null) ? null : query.trim();
+        boolean hasQuery = q != null && !q.isBlank();
+
         if (includeInactive) {
+            if (hasQuery) {
+                return productRepository.findAllByNameContainingIgnoreCase(q, pageable).map(ProductDTO::toDTO);
+            }
             return productRepository.findAll(pageable).map(ProductDTO::toDTO);
         }
 
         if (active == null) {
+            if (hasQuery) {
+                return productRepository.findAllByActiveTrueAndNameContainingIgnoreCase(q, pageable).map(ProductDTO::toDTO);
+            }
             return productRepository.findAllByActiveTrue(pageable).map(ProductDTO::toDTO);
+        }
+
+        if (hasQuery) {
+            return productRepository.findAllByActiveAndNameContainingIgnoreCase(active, q, pageable).map(ProductDTO::toDTO);
         }
 
         return productRepository.findAllByActive(active, pageable).map(ProductDTO::toDTO);

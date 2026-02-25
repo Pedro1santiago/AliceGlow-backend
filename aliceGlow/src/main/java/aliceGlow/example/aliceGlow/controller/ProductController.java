@@ -42,9 +42,10 @@ public class ProductController {
     public ResponseEntity<Page<ProductDTO>> listProductsPage(
             @RequestParam(required = false) Boolean active,
             @RequestParam(defaultValue = "false") boolean includeInactive,
+            @RequestParam(required = false) String q,
             @PageableDefault(size = 20, sort = "name") Pageable pageable
     ) {
-        return ResponseEntity.ok(productService.listProductsPage(active, includeInactive, pageable));
+        return ResponseEntity.ok(productService.listProductsPage(active, includeInactive, q, pageable));
     }
 
     /**
