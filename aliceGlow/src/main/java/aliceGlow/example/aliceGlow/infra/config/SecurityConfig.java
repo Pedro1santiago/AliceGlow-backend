@@ -159,7 +159,7 @@ public class SecurityConfig {
                         })
                     )
 
-                .addFilterBefore(correlationIdFilter, JwtAuthenticationFilter.class)
+                .addFilterBefore(correlationIdFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
