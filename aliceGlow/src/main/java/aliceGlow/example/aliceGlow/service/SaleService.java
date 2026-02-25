@@ -44,7 +44,7 @@ public class SaleService {
      */
     @Transactional(readOnly = true)
     public List<SaleDTO> listSales() {
-        return saleRepository.findAll()
+        return saleRepository.findAllWithItems()
                 .stream()
                 .map(SaleDTO::toDTO)
                 .toList();
@@ -63,7 +63,7 @@ public class SaleService {
      */
     @Transactional(readOnly = true)
     public List<SaleDTO> listSalesByPeriod(LocalDateTime start, LocalDateTime end) {
-        return saleRepository.findAllByCreatedAtBetween(start, end)
+        return saleRepository.findAllByCreatedAtBetweenWithItems(start, end)
                 .stream()
                 .map(SaleDTO::toDTO)
                 .toList();
@@ -82,7 +82,7 @@ public class SaleService {
      */
     @Transactional(readOnly = true)
     public SaleDTO findById(Long id) {
-        Sale sale = saleRepository.findById(id)
+        Sale sale = saleRepository.findByIdWithItems(id)
                 .orElseThrow(SaleNotFoundException::new);
         return SaleDTO.toDTO(sale);
     }
