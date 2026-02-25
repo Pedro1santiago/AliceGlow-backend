@@ -26,6 +26,9 @@ public class SaleController {
         this.saleService = saleService;
     }
 
+    /**
+     * Lists sales. If start/end are provided, applies a period filter.
+     */
     @GetMapping
     public ResponseEntity<List<SaleDTO>> listSales(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
@@ -40,6 +43,9 @@ public class SaleController {
         return ResponseEntity.ok(saleService.listSalesByPeriod(start, end));
     }
 
+    /**
+     * Lists sales with pagination. If start/end are provided, applies a period filter.
+     */
     @GetMapping("/page")
     public ResponseEntity<Page<SaleDTO>> listSalesPage(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
@@ -55,23 +61,35 @@ public class SaleController {
         return ResponseEntity.ok(saleService.listSalesByPeriodPage(start, end, pageable));
     }
 
+    /**
+     * Retrieves a sale by id.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<SaleDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(saleService.findById(id));
     }
 
+    /**
+     * Creates a new sale and decrements stock for each sold item.
+     */
     @PostMapping
     public ResponseEntity<SaleDTO> create(@Valid @RequestBody CreateSaleDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(saleService.sale(dto));
     }
 
+    /**
+     * Cancels a sale.
+     */
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<Void> cancel(@PathVariable Long id) {
         saleService.cancelSale(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Marks a sale as paid.
+     */
     @PatchMapping("/{id}/pay")
     public ResponseEntity<Void> pay(@PathVariable Long id) {
         saleService.markAsPaid(id);

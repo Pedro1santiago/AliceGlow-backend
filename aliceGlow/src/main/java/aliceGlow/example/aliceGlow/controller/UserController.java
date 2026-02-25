@@ -25,17 +25,26 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Creates a user and assigns the default profile (USER).
+     */
     @PostMapping
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody CreateUserDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(userService.createUser(dto));
     }
 
+    /**
+     * Lists all users.
+     */
     @GetMapping
     public ResponseEntity<List<UserDTO>> listUsers() {
         return ResponseEntity.ok(userService.listUsers());
     }
 
+    /**
+     * Lists users with pagination.
+     */
     @GetMapping("/page")
     public ResponseEntity<Page<UserDTO>> listUsersPage(
             @PageableDefault(size = 20, sort = "id", direction = Sort.Direction.DESC) Pageable pageable
@@ -43,6 +52,9 @@ public class UserController {
         return ResponseEntity.ok(userService.listUsersPage(pageable));
     }
 
+    /**
+     * Updates user data.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
             @PathVariable Long id,
@@ -51,6 +63,9 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, dto));
     }
 
+    /**
+     * Deletes a user.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);

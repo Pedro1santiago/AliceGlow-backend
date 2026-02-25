@@ -31,6 +31,9 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * Lists users.
+     */
     public List<UserDTO> listUsers(){
         return userRepository.findAll()
                 .stream()
@@ -38,10 +41,16 @@ public class UserService {
                 .toList();
     }
 
+    /**
+     * Lists users with pagination.
+     */
     public Page<UserDTO> listUsersPage(Pageable pageable) {
         return userRepository.findAll(pageable).map(UserDTO::toDTO);
     }
 
+    /**
+     * Creates a user, validates unique email, hashes the password, and assigns the default profile.
+     */
     public UserDTO createUser(CreateUserDTO createUserDTO) {
 
           if (userRepository.existsByEmail(createUserDTO.email())){
@@ -64,6 +73,9 @@ public class UserService {
 
     }
 
+    /**
+     * Updates the user's name and email.
+     */
     public UserDTO updateUser(Long id, UpdateUserDTO updateUserDTO){
        User user = userRepository.findById(id)
                .orElseThrow (() -> new UserNotFoundException(id));
@@ -77,6 +89,9 @@ public class UserService {
 
     }
 
+    /**
+     * Deletes a user by id.
+     */
     public void deleteUser(Long id){
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));

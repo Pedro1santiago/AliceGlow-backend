@@ -28,22 +28,34 @@ public class CashBoxController {
         this.cashBoxService = cashBoxService;
     }
 
+    /**
+     * Creates a cash box for a business date (businessDate).
+     */
     @PostMapping
     public ResponseEntity<CashBoxDTO> create(@Valid @RequestBody CreateCashBoxDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(cashBoxService.create(dto));
     }
 
+    /**
+     * Retrieves a cash box by id.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<CashBoxDTO> findById(@PathVariable Long id) {
         return ResponseEntity.ok(cashBoxService.findById(id));
     }
 
+    /**
+     * Lists all cash boxes (sorted by date descending).
+     */
     @GetMapping
     public ResponseEntity<List<CashBoxDTO>> listAll() {
         return ResponseEntity.ok(cashBoxService.listAll());
     }
 
+    /**
+     * Lists cash boxes with pagination (sorted by date descending).
+     */
     @GetMapping("/page")
     public ResponseEntity<Page<CashBoxDTO>> listAllPage(
             @PageableDefault(size = 20, sort = "businessDate", direction = Sort.Direction.DESC) Pageable pageable
@@ -51,11 +63,17 @@ public class CashBoxController {
         return ResponseEntity.ok(cashBoxService.listAllPage(pageable));
     }
 
+    /**
+     * Retrieves a cash box by business date.
+     */
     @GetMapping(params = "date")
     public ResponseEntity<CashBoxDTO> findByBusinessDate(@RequestParam LocalDate date) {
         return ResponseEntity.ok(cashBoxService.findByBusinessDate(date));
     }
 
+    /**
+     * Updates the cash box balance.
+     */
     @PatchMapping("/{id}")
     public ResponseEntity<CashBoxDTO> updateBalance(
             @PathVariable Long id,
@@ -64,6 +82,9 @@ public class CashBoxController {
         return ResponseEntity.ok(cashBoxService.updateBalance(id, dto));
     }
 
+    /**
+     * Registers an outflow and updates the cash box balance.
+     */
     @PostMapping("/{id}/outflows")
     public ResponseEntity<CashOutflowDTO> addOutflow(
             @PathVariable Long id,

@@ -20,6 +20,9 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
+    /**
+     * Authenticates the user via Spring Security and generates a JWT for the authenticated principal.
+     */
     public AuthResponse login(LoginDTO request){
 
         Authentication authentication =

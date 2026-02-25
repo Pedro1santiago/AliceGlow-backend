@@ -4,6 +4,10 @@ import java.time.*;
 
 public record ReportQueryPeriod(LocalDateTime start, LocalDateTime end) {
 
+    /**
+     * Resolves the query period from (start/end) or (month/year).
+     * If nothing is provided, defaults to today (00:00 through 23:59:59.999...).
+     */
     public static ReportQueryPeriod from(LocalDateTime start, LocalDateTime end, Integer month, Integer year) {
         if (start != null && end != null) {
             return new ReportQueryPeriod(start, end);

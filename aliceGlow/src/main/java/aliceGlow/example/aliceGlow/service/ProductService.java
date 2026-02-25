@@ -28,6 +28,9 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
+    /**
+     * Lists products applying the active filter and the include-inactive option.
+     */
     public List<ProductDTO> listProducts(Boolean active, boolean includeInactive){
         List<Product> products;
 
@@ -42,6 +45,9 @@ public class ProductService {
         return products.stream().map(ProductDTO::toDTO).toList();
     }
 
+    /**
+     * Lists products with pagination applying the active filter and the include-inactive option.
+     */
     public Page<ProductDTO> listProductsPage(Boolean active, boolean includeInactive, Pageable pageable) {
         if (includeInactive) {
             return productRepository.findAll(pageable).map(ProductDTO::toDTO);
@@ -54,6 +60,9 @@ public class ProductService {
         return productRepository.findAllByActive(active, pageable).map(ProductDTO::toDTO);
     }
 
+    /**
+     * Calculates margin (amount and %) per product based on cost and sale price.
+     */
         public List<ProductMarginDTO> listProductMargins() {
         return productRepository.findAll()
             .stream()
@@ -90,6 +99,9 @@ public class ProductService {
             .toList();
         }
 
+    /**
+     * Creates a new active product with initial stock.
+     */
     public ProductDTO createProduct(CreateProductDTO createProductDTO){
         Product product = new Product();
         product.setName(createProductDTO.name());
@@ -103,6 +115,9 @@ public class ProductService {
         return ProductDTO.toDTO(savedProduct);
     }
 
+    /**
+     * Updates product fields and validates negative values for cost/price/stock.
+     */
     public ProductDTO updateProduct(Long id, UpdateProductDTO updateProductDTO) {
 
         Product product = productRepository.findById(id)
@@ -138,6 +153,9 @@ public class ProductService {
         return ProductDTO.toDTO(updatedProduct);
     }
 
+    /**
+     * Marks the product as active.
+     */
     public ProductDTO activateProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(ProductNotFoundException::new);
@@ -146,6 +164,9 @@ public class ProductService {
         return ProductDTO.toDTO(productRepository.save(product));
     }
 
+    /**
+     * Marks the product as inactive.
+     */
     public ProductDTO deactivateProduct(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(ProductNotFoundException::new);
@@ -154,6 +175,9 @@ public class ProductService {
         return ProductDTO.toDTO(productRepository.save(product));
     }
 
+    /**
+     * Deletes a product; if there are FK references, throws a "product in use" exception.
+     */
     public void deleteProduct(Long id){
         Product product = productRepository.findById(id)
                 .orElseThrow(ProductNotFoundException::new);

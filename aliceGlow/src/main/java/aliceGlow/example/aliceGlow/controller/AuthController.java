@@ -17,6 +17,9 @@ public class AuthController {
         this.authService = authService;
     }
 
+    /**
+     * Performs login and returns a JWT token for authenticating other routes.
+     */
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginDTO request){
         return ResponseEntity.ok(authService.login(request));

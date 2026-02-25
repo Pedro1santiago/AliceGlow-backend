@@ -33,6 +33,9 @@ public class ReportService {
         this.cashOutflowRepository = cashOutflowRepository;
     }
 
+    /**
+     * Returns, per product, the quantity sold in the period and a flag indicating if it sold.
+     */
     public List<ProductSoldStatusDTO> productsSoldStatus(LocalDateTime start, LocalDateTime end) {
         Map<Long, Long> soldQuantityByProductId = new HashMap<>();
 
@@ -48,6 +51,9 @@ public class ReportService {
                 .toList();
     }
 
+    /**
+     * Returns a summary: number of products sold vs not sold in the period.
+     */
     public ProductSalesStatusSummaryDTO productsSoldStatusSummary(LocalDateTime start, LocalDateTime end) {
         long soldProducts = 0;
         long notSoldProducts = 0;
@@ -71,11 +77,17 @@ public class ReportService {
         return new ProductSalesStatusSummaryDTO(soldProducts, notSoldProducts);
     }
 
+    /**
+     * Converts a product + sold-quantity map to the status DTO.
+     */
     private ProductSoldStatusDTO toSoldStatus(Product product, Map<Long, Long> soldQuantityByProductId) {
         Long quantity = soldQuantityByProductId.getOrDefault(product.getId(), 0L);
         return new ProductSoldStatusDTO(product.getId(), product.getName(), quantity, quantity > 0);
     }
 
+    /**
+     * Builds a cash outflows report (list + total) for the period.
+     */
     public CashOutflowReportDTO cashOutflows(LocalDateTime start, LocalDateTime end) {
         List<CashOutflowDTO> outflows = cashOutflowRepository.findAllByOccurredAtBetween(start, end)
                 .stream()

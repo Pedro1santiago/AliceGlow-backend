@@ -24,6 +24,9 @@ public class ProductController {
         this.productService = productService;
     }
 
+    /**
+     * Lists products, optionally filtering by active and/or including inactive ones.
+     */
     @GetMapping
     public ResponseEntity<List<ProductDTO>> listProducts(
             @RequestParam(required = false) Boolean active,
@@ -32,6 +35,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.listProducts(active, includeInactive));
     }
 
+    /**
+     * Lists paginated products using the same filters as the list endpoint.
+     */
     @GetMapping("/page")
     public ResponseEntity<Page<ProductDTO>> listProductsPage(
             @RequestParam(required = false) Boolean active,
@@ -41,6 +47,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.listProductsPage(active, includeInactive, pageable));
     }
 
+    /**
+     * Creates a new product.
+     */
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(
             @Valid @RequestBody CreateProductDTO dto
@@ -49,6 +58,9 @@ public class ProductController {
                 .body(productService.createProduct(dto));
     }
 
+    /**
+     * Partially updates product fields.
+     */
     @PatchMapping("/{id}")
     public ResponseEntity<ProductDTO> updateProduct(
             @PathVariable Long id,
@@ -57,17 +69,26 @@ public class ProductController {
         return ResponseEntity.ok(productService.updateProduct(id, dto));
     }
 
+    /**
+     * Deletes a product (may fail if referenced by sales/items).
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Reactivates a product.
+     */
     @PatchMapping("/{id}/activate")
     public ResponseEntity<ProductDTO> activateProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.activateProduct(id));
     }
 
+    /**
+     * Deactivates a product (keeps history; removes from the default listing).
+     */
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<ProductDTO> deactivateProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.deactivateProduct(id));

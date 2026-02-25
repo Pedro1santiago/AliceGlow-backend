@@ -31,6 +31,9 @@ public class CashBoxService {
         this.cashOutflowRepository = cashOutflowRepository;
     }
 
+    /**
+     * Creates a cash box for the given date, preventing duplicates by businessDate.
+     */
     @Transactional
     public CashBoxDTO create(CreateCashBoxDTO dto) {
         if (cashBoxRepository.existsByBusinessDate(dto.businessDate())) {
@@ -44,18 +47,27 @@ public class CashBoxService {
         return CashBoxDTO.toDTO(cashBoxRepository.save(cashBox));
     }
 
+    /**
+     * Retrieves a cash box by id.
+     */
     public CashBoxDTO findById(Long id) {
         CashBox cashBox = cashBoxRepository.findById(id)
                 .orElseThrow(() -> new CashBoxNotFoundException(id));
         return CashBoxDTO.toDTO(cashBox);
     }
 
+    /**
+     * Retrieves a cash box by business date.
+     */
     public CashBoxDTO findByBusinessDate(LocalDate businessDate) {
         CashBox cashBox = cashBoxRepository.findByBusinessDate(businessDate)
                 .orElseThrow(CashBoxNotFoundException::new);
         return CashBoxDTO.toDTO(cashBox);
     }
 
+    /**
+     * Lists cash boxes sorted by date (desc).
+     */
     @Transactional(readOnly = true)
     public List<CashBoxDTO> listAll() {
         return cashBoxRepository.findAllByOrderByBusinessDateDesc()
@@ -64,11 +76,17 @@ public class CashBoxService {
                 .toList();
     }
 
+    /**
+     * Lists cash boxes with pagination sorted by date (desc).
+     */
     @Transactional(readOnly = true)
     public Page<CashBoxDTO> listAllPage(Pageable pageable) {
         return cashBoxRepository.findAllByOrderByBusinessDateDesc(pageable).map(CashBoxDTO::toDTO);
     }
 
+    /**
+     * Updates the cash box balance.
+     */
     @Transactional
     public CashBoxDTO updateBalance(Long id, UpdateCashBoxDTO dto) {
         CashBox cashBox = cashBoxRepository.findById(id)
@@ -77,6 +95,9 @@ public class CashBoxService {
         return CashBoxDTO.toDTO(cashBoxRepository.save(cashBox));
     }
 
+    /**
+     * Registers a cash outflow and debits the current balance.
+     */
     @Transactional
     public CashOutflowDTO addOutflow(Long cashBoxId, CreateCashOutflowDTO dto) {
         CashBox cashBox = cashBoxRepository.findById(cashBoxId)

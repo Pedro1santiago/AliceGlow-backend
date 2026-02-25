@@ -26,12 +26,18 @@ public class StockPurchaseController {
         this.stockPurchaseService = stockPurchaseService;
     }
 
+    /**
+     * Registers a stock purchase.
+     */
     @PostMapping
     public ResponseEntity<StockPurchaseDTO> create(@Valid @RequestBody CreateStockPurchaseDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(stockPurchaseService.create(dto));
     }
 
+        /**
+         * Lists purchases by period (start/end), or by month/year, or defaults to the current month.
+         */
     @GetMapping
     public ResponseEntity<List<StockPurchaseDTO>> list(
             @RequestParam(required = false) LocalDate start,
@@ -58,6 +64,9 @@ public class StockPurchaseController {
         return ResponseEntity.ok(stockPurchaseService.listByPeriod(s, e));
     }
 
+    /**
+     * Lists purchases with pagination by period (start/end), or by month/year, or defaults to the current month.
+     */
     @GetMapping("/page")
     public ResponseEntity<Page<StockPurchaseDTO>> listPage(
             @RequestParam(required = false) LocalDate start,

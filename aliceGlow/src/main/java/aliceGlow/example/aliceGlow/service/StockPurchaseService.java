@@ -20,6 +20,9 @@ public class StockPurchaseService {
         this.stockPurchaseRepository = stockPurchaseRepository;
     }
 
+    /**
+     * Creates a stock purchase record.
+     */
     public StockPurchaseDTO create(CreateStockPurchaseDTO dto) {
         StockPurchase purchase = new StockPurchase();
         purchase.setPurchaseDate(dto.purchaseDate());
@@ -27,6 +30,9 @@ public class StockPurchaseService {
         return StockPurchaseDTO.toDTO(stockPurchaseRepository.save(purchase));
     }
 
+    /**
+     * Lists purchases made between the given dates.
+     */
     public List<StockPurchaseDTO> listByPeriod(LocalDate start, LocalDate end) {
         return stockPurchaseRepository.findAllByPurchaseDateBetween(start, end)
                 .stream()
@@ -34,6 +40,9 @@ public class StockPurchaseService {
                 .toList();
     }
 
+    /**
+     * Lists purchases with pagination made between the given dates.
+     */
     public Page<StockPurchaseDTO> listByPeriodPage(LocalDate start, LocalDate end, Pageable pageable) {
         return stockPurchaseRepository.findAllByPurchaseDateBetween(start, end, pageable)
                 .map(StockPurchaseDTO::toDTO);

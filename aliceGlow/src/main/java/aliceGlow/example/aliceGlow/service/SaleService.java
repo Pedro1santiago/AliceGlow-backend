@@ -39,6 +39,9 @@ public class SaleService {
         this.saleItemRepository = saleItemRepository;
     }
 
+    /**
+     * Lists all sales.
+     */
     public List<SaleDTO> listSales() {
         return saleRepository.findAll()
                 .stream()
@@ -46,10 +49,16 @@ public class SaleService {
                 .toList();
     }
 
+    /**
+     * Lists sales with pagination.
+     */
     public Page<SaleDTO> listSalesPage(Pageable pageable) {
         return saleRepository.findAll(pageable).map(SaleDTO::toDTO);
     }
 
+    /**
+     * Lists sales filtered by creation date.
+     */
     public List<SaleDTO> listSalesByPeriod(LocalDateTime start, LocalDateTime end) {
         return saleRepository.findAllByCreatedAtBetween(start, end)
                 .stream()
@@ -57,16 +66,25 @@ public class SaleService {
                 .toList();
     }
 
+    /**
+     * Lists sales with pagination filtered by creation date.
+     */
     public Page<SaleDTO> listSalesByPeriodPage(LocalDateTime start, LocalDateTime end, Pageable pageable) {
         return saleRepository.findAllByCreatedAtBetween(start, end, pageable).map(SaleDTO::toDTO);
     }
 
+    /**
+     * Retrieves a sale by id.
+     */
     public SaleDTO findById(Long id) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(SaleNotFoundException::new);
         return SaleDTO.toDTO(sale);
     }
 
+    /**
+     * Creates a sale (PENDING), validates items, and decrements product stock.
+     */
     @Transactional
     public SaleDTO sale(CreateSaleDTO dto) {
 
@@ -119,6 +137,9 @@ public class SaleService {
         return SaleDTO.toDTO(saleRepository.save(sale));
     }
 
+    /**
+     * Cancels the sale and clears the paid date.
+     */
     public void cancelSale(Long id) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(SaleNotFoundException::new);
@@ -129,6 +150,9 @@ public class SaleService {
         saleRepository.save(sale);
     }
 
+    /**
+     * Marks the sale as paid and sets the paid timestamp.
+     */
     public void markAsPaid(Long id) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(SaleNotFoundException::new);
@@ -139,22 +163,37 @@ public class SaleService {
         saleRepository.save(sale);
     }
 
+    /**
+     * Sums total sales invoicing.
+     */
     public BigDecimal invoicing() {
         return saleRepository.sumAllInvoicing();
     }
 
+    /**
+     * Sums invoicing for the given period.
+     */
     public BigDecimal invoicingByPeriod(LocalDateTime start, LocalDateTime end) {
         return saleRepository.sumInvoicingByPeriod(start, end);
     }
 
+    /**
+     * Calculates total profit based on the cost snapshot of sold items.
+     */
     public BigDecimal profit() {
         return saleItemRepository.calculateTotalProfit();
     }
 
+    /**
+     * Calculates total profit for the given period.
+     */
     public BigDecimal profitByPeriod(LocalDateTime start, LocalDateTime end) {
         return saleItemRepository.calculateTotalProfitByPeriod(start, end);
     }
 
+    /**
+     * Returns the top-selling products (name + quantity).
+     */
     public List<ProductSalesDTO> listProductSales() {
         return saleItemRepository.findTopSellingProducts()
                 .stream()
