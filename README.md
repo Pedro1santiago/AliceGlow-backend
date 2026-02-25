@@ -9,8 +9,8 @@ AliceGlow é uma API RESTful para gerenciar usuários, produtos, vendas, caixa e
 ## Links (Produção)
 
 - Base URL: https://aliceglow-backend.onrender.com
-- Swagger UI: https://aliceglow-backend.onrender.com/swagger-ui/index.html
-- OpenAPI JSON: https://aliceglow-backend.onrender.com/v3/api-docs
+- Swagger UI (se habilitado): https://aliceglow-backend.onrender.com/swagger-ui/index.html
+- OpenAPI JSON (se habilitado): https://aliceglow-backend.onrender.com/v3/api-docs
 
 ## Stack Tecnológico
 
@@ -99,6 +99,13 @@ DB_PASSWORD=sua_senha
 
 # JWT
 JWT_SECRET=sua_chave_secreta_jwt
+
+# Swagger/OpenAPI (produção: desativado por padrão)
+SPRINGDOC_API_DOCS_ENABLED=false
+SPRINGDOC_SWAGGER_UI_ENABLED=false
+
+# CORS (origens separadas por vírgula)
+CORS_ALLOWED_ORIGINS=https://aliceglowfrontend.vercel.app,https://aliceglow-backend.onrender.com
 ```
 
 ### Executar localmente (opcional)
