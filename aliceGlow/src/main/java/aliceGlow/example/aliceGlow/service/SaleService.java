@@ -42,6 +42,7 @@ public class SaleService {
     /**
      * Lists all sales.
      */
+    @Transactional(readOnly = true)
     public List<SaleDTO> listSales() {
         return saleRepository.findAll()
                 .stream()
@@ -52,6 +53,7 @@ public class SaleService {
     /**
      * Lists sales with pagination.
      */
+    @Transactional(readOnly = true)
     public Page<SaleDTO> listSalesPage(Pageable pageable) {
         return saleRepository.findAll(pageable).map(SaleDTO::toDTO);
     }
@@ -59,6 +61,7 @@ public class SaleService {
     /**
      * Lists sales filtered by creation date.
      */
+    @Transactional(readOnly = true)
     public List<SaleDTO> listSalesByPeriod(LocalDateTime start, LocalDateTime end) {
         return saleRepository.findAllByCreatedAtBetween(start, end)
                 .stream()
@@ -69,6 +72,7 @@ public class SaleService {
     /**
      * Lists sales with pagination filtered by creation date.
      */
+    @Transactional(readOnly = true)
     public Page<SaleDTO> listSalesByPeriodPage(LocalDateTime start, LocalDateTime end, Pageable pageable) {
         return saleRepository.findAllByCreatedAtBetween(start, end, pageable).map(SaleDTO::toDTO);
     }
@@ -76,6 +80,7 @@ public class SaleService {
     /**
      * Retrieves a sale by id.
      */
+    @Transactional(readOnly = true)
     public SaleDTO findById(Long id) {
         Sale sale = saleRepository.findById(id)
                 .orElseThrow(SaleNotFoundException::new);
