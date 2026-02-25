@@ -1,10 +1,16 @@
 # AliceGlow - Beauty Products Shop API
 
-Plataforma backend para gerenciamento de loja de produtos de beleza, desenvolvida com as melhores práticas de arquitetura e segurança. Sistema completo de autenticação, gerenciamento de usuários, produtos e vendas em tempo real.
+Backend para gerenciamento de loja de produtos de beleza. Possui autenticação via JWT, endpoints REST e persistência com PostgreSQL + Flyway.
 
 ## Visão Geral
 
-AliceGlow é uma API RESTful robusta e escalável desenvolvida para gerenciar uma loja de produtos de beleza. Com arquitetura moderna, segurança implementada via JWT e banco de dados relacional otimizado, a solução está pronta para ambientes de produção críticos.
+AliceGlow é uma API RESTful para gerenciar usuários, produtos, vendas, caixa e relatórios. O deploy de referência roda no Render e o banco no Neon.
+
+## Links (Produção)
+
+- Base URL: https://aliceglow-backend.onrender.com
+- Swagger UI: https://aliceglow-backend.onrender.com/swagger-ui/index.html
+- OpenAPI JSON: https://aliceglow-backend.onrender.com/v3/api-docs
 
 ## Stack Tecnológico
 
@@ -78,7 +84,7 @@ AliceGlow é uma API RESTful robusta e escalável desenvolvida para gerenciar um
 
 - Java 17 ou superior
 - Maven 3.8+
-- PostgreSQL 16 (para desenvolvimento local)
+- PostgreSQL (apenas se for rodar local sem Docker)
 - Git
 
 ### Variáveis de Ambiente
@@ -95,25 +101,46 @@ DB_PASSWORD=sua_senha
 JWT_SECRET=sua_chave_secreta_jwt
 ```
 
-### Instalação Local
+### Executar localmente (opcional)
+
+Se você não vai rodar localmente, pode pular esta seção e usar os links de produção acima.
+
+#### Clonar
 
 1. Clone o repositório
 ```bash
-git clone https://github.com/seu-usuario/AliceGlow-backend.git
+git clone https://github.com/Pedro1santiago/AliceGlow-backend.git
 cd AliceGlow-backend/aliceGlow
 ```
 
-2. Instale as dependências
+#### Rodar via Maven Wrapper
+
+1. Instale as dependências
 ```bash
 ./mvnw clean install
 ```
 
-3. Execute a aplicação
+2. Execute a aplicação
 ```bash
 ./mvnw spring-boot:run
 ```
 
-A API estará disponível em `http://localhost:8080`
+Por padrão, ao rodar localmente a API fica em `http://localhost:8080`.
+
+## Documentação da API (Swagger/OpenAPI)
+
+A documentação é gerada automaticamente via OpenAPI 3 + Swagger UI.
+
+Troque `BASE_URL` pelo host que você estiver usando (produção ou local):
+
+- Swagger UI: BASE_URL/swagger-ui/index.html
+- OpenAPI JSON: BASE_URL/v3/api-docs
+- OpenAPI YAML: BASE_URL/v3/api-docs.yaml
+
+Observações:
+
+- Se você receber `401 Unauthorized`, confirme se o deploy está com a versão mais recente do código e se as rotas do Swagger/OpenAPI estão liberadas no Spring Security.
+- Para testar endpoints protegidos via JWT, use o botão **Authorize** no Swagger UI e informe o token.
 
 ## Arquitetura
 
@@ -292,16 +319,17 @@ jwt.secret=${JWT_SECRET}
 
 ## Testes
 
-A aplicação inclui testes unitários para os principais componentes:
+O projeto possui testes unitários para controllers e services (JUnit 5 + Mockito).
 
 ```bash
 ./mvnw test
 ```
 
-### Arquivos de Teste
-- `ProductServiceTest.java` - Testes do serviço de produtos
-- `SaleServiceTest.java` - Testes do serviço de vendas
-- `UserServiceTest.java` - Testes do serviço de usuários
+No Windows, se preferir:
+
+```bash
+.\mvnw.cmd test
+```
 
 ## Docker
 
@@ -316,20 +344,6 @@ docker run -e DB_URL_JDBC=jdbc:postgresql://... \
            -p 8080:8080 \
            aliceglow-backend:latest
 ```
-
-## Monitoramento e Performance
-
-Em produção no Render:
-- Logs estruturados disponíveis via dashboard
-- Métricas de uso de CPU e memória
-- Alertas configuráveis para anomalias
-
-## CI/CD
-
-Configure pipelines de CI/CD para:
-- Executar testes automaticamente
-- Build e deploy automático em produção
-- Validação de código via linters
 
 ## Tratamento de Erros
 
@@ -351,132 +365,6 @@ O sistema implementa validações robustas em todas as camadas:
 - Validação de entrada via Jakarta Validation
 - Regras de negócio no serviço
 - Constraints em banco de dados
-
-## Testes Unitários
-
-### Estrutura de Testes
-
-A aplicação possui testes unitários com as melhores práticas de mercado, cobrindo controllers e serviços:
-
-**Testes de Controllers:**
-```
-src/test/java/aliceGlow/example/aliceGlow/controller/
-├── AuthControllerTest.java       (1 teste)
-├── ProductControllerTest.java    (4 testes)
-├── SaleControllerTest.java       (1 teste)
-└── UserControllerTest.java       (1 teste)
-```
-
-**Testes de Serviços:**
-```
-src/test/java/aliceGlow/example/aliceGlow/service/
-├── AuthServiceTest.java          (3 testes)
-├── ProductServiceTest.java       (7 testes)
-├── SaleServiceTest.java          (5 testes)
-└── UserServiceTest.java          (8 testes)
-```
-
-### Arquitetura dos Testes
-
-- **Padrão**: Injeção de Dependência via Construtor
-- **Framework**: JUnit 5 + Mockito
-- **Isolamento**: MockitoExtension para isolamento de dependências
-- **Sem Banco de Dados**: Testes rápidos e independentes
-- **Verificação de Comportamento**: `verify()` para garantir chamadas corretas
-- **Setup Comum**: `@BeforeEach` para preparação de dados
-
-### Exemplo de Teste (AuthControllerTest)
-
-```java
-@ExtendWith(MockitoExtension.class)
-class AuthControllerTest {
-
-    @Mock
-    private AuthService authService;
-
-    @InjectMocks
-    private AuthController authController;
-
-    private LoginDTO loginDTO;
-    private AuthResponse authResponse;
-
-    @BeforeEach
-    void setUp() {
-        loginDTO = new LoginDTO("test@example.com", "password123");
-        authResponse = new AuthResponse("token_jwt_123");
-    }
-
-    @Test
-    void shouldLoginSuccessfully() {
-        when(authService.login(any())).thenReturn(authResponse);
-
-        ResponseEntity<AuthResponse> response = authController.login(loginDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("token_jwt_123", response.getBody().token());
-        verify(authService).login(any());
-    }
-}
-```
-
-### Executar Testes
-
-```bash
-# Todos os testes dos controllers
-mvnw clean test -Dtest=*ControllerTest
-
-# Todos os testes de serviços
-mvnw clean test -Dtest=*ServiceTest
-
-# Teste específico
-mvnw test -Dtest=AuthControllerTest
-mvnw test -Dtest=AuthServiceTest
-
-# Um teste específico
-mvnw test -Dtest=AuthServiceTest#shouldAuthenticateAndReturnToken
-
-# Todos os testes
-mvnw clean test
-
-# Com cobertura de código
-mvnw clean test jacoco:report
-```
-
-### Cobertura de Testes
-
-| Camada | Classe | Testes | Métodos |
-|--------|--------|--------|---------|
-| **Controller** | Auth | 1 | login |
-| **Controller** | Product | 4 | list, create, update, delete |
-| **Controller** | Sale | 1 | list |
-| **Controller** | User | 1 | create |
-| **Service** | Auth | 3 | authenticate, token generation |
-| **Service** | Product | 7 | list, create, update, delete, exceptions |
-| **Service** | Sale | 5 | create, cancel, find, exceptions |
-| **Service** | User | 8 | create, list, update, delete, exceptions |
-| **Total** | - | **30** | **20+ endpoints** |
-
-### Padrões Implementados
-
-1. **AAA Pattern**: Arrange, Act, Assert, Verify
-2. **Setup com @BeforeEach**: Preparação comum de dados
-3. **Mockito**: Mock de todas as dependências
-4. **Assertions Específicas**: Validação de HTTP Status, dados e comportamento
-5. **Isolamento Total**: Sem banco de dados, sem chamadas HTTP reais
-6. **Nomes Descritivos**: Métodos com padrão should...
-
-### Testes por Categoria
-
-**AuthServiceTest** (3 testes):
-- `shouldAuthenticateAndReturnToken` - Autentica e retorna token JWT
-- `shouldCallAuthenticationManagerWithCredentials` - Valida credenciais
-- `shouldGenerateTokenFromAuthenticatedUser` - Token gerado corretamente
-
-**ProductControllerTest** (4 testes):
-- `shouldListProductsSuccessfully` - Lista produtos (200 OK)
-- `shouldCreateProductSuccessfully` - Cria produto (201 CREATED)
-- `shouldUpdateProductSuccessfully` - Atualiza produto (200 OK)
-- `shouldDeleteProductSuccessfully` - Deleta produto (204 NO CONTENT)
 
 ## Deployment em Produção
 
