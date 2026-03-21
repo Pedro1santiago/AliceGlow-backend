@@ -2,6 +2,7 @@ package aliceGlow.example.aliceGlow.controller;
 
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
+import aliceGlow.example.aliceGlow.dto.sale.UpdateSaleDTO;
 import aliceGlow.example.aliceGlow.service.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -76,6 +77,14 @@ public class SaleController {
     public ResponseEntity<SaleDTO> create(@Valid @RequestBody CreateSaleDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(saleService.sale(dto));
+    }
+
+    /**
+     * Updates an existing sale (including items) and adjusts stock accordingly.
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<SaleDTO> update(@PathVariable Long id, @Valid @RequestBody UpdateSaleDTO dto) {
+        return ResponseEntity.ok(saleService.updateSale(id, dto));
     }
 
     /**

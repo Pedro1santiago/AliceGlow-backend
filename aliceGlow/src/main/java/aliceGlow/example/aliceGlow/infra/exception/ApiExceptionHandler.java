@@ -59,6 +59,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler({
             InsufficientStockException.class
+            , SaleCannotBeEditedException.class
     })
     public ProblemDetail handleBusinessConflict(RuntimeException ex, HttpServletRequest request) {
         ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);

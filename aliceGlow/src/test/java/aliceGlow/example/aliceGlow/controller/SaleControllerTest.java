@@ -4,6 +4,7 @@ import aliceGlow.example.aliceGlow.domain.PaymentMethod;
 import aliceGlow.example.aliceGlow.domain.SaleStatus;
 import aliceGlow.example.aliceGlow.dto.sale.CreateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.sale.SaleDTO;
+import aliceGlow.example.aliceGlow.dto.sale.UpdateSaleDTO;
 import aliceGlow.example.aliceGlow.dto.saleItem.CreateSaleItemDTO;
 import aliceGlow.example.aliceGlow.service.SaleService;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,6 +38,7 @@ class SaleControllerTest {
 
     private SaleDTO saleDTO;
     private CreateSaleDTO createSaleDTO;
+    private UpdateSaleDTO updateSaleDTO;
 
     @BeforeEach
     void setUp() {
@@ -56,7 +58,15 @@ class SaleControllerTest {
 
         createSaleDTO = new CreateSaleDTO(
                 "Diana",
+            null,
                 PaymentMethod.PIX,
+            List.of(new CreateSaleItemDTO(1L, 2, new BigDecimal("80.00")))
+        );
+
+        updateSaleDTO = new UpdateSaleDTO(
+            "Diana",
+            LocalDateTime.of(2026, 3, 21, 10, 0),
+            PaymentMethod.PIX,
             List.of(new CreateSaleItemDTO(1L, 2, new BigDecimal("80.00")))
         );
     }
@@ -162,5 +172,15 @@ class SaleControllerTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
         verify(saleService).markAsPaid(1L);
+    }
+
+    @Test
+    void shouldUpdateSaleSuccessfully() {
+        when(saleService.updateSale(eq(1L), any())).thenReturn(saleDTO);
+
+        ResponseEntity<SaleDTO> response = saleController.update(1L, updateSaleDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(saleService).updateSale(eq(1L), any());
     }
 }
