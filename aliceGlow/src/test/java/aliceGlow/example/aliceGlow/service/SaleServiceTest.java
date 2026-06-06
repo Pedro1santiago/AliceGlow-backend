@@ -191,7 +191,7 @@ class SaleServiceTest {
         UpdateSaleDTO dto = new UpdateSaleDTO(
                 "New Client",
                 LocalDateTime.of(2026, 3, 2, 9, 0),
-                PaymentMethod.CARD,
+            PaymentMethod.CREDIT_CARD,
                 List.of(new CreateSaleItemDTO(product.getId(), 5, new BigDecimal("12.00")))
         );
 
@@ -202,7 +202,7 @@ class SaleServiceTest {
         SaleDTO updated = saleService.updateSale(saleId, dto);
 
         assertEquals("New Client", updated.client());
-        assertEquals(PaymentMethod.CARD, updated.paymentMethod());
+        assertEquals(PaymentMethod.CREDIT_CARD, updated.paymentMethod());
         assertEquals(LocalDateTime.of(2026, 3, 2, 9, 0), updated.createdAt());
         assertEquals(7, product.getStock());
         assertEquals(new BigDecimal("60.00"), updated.total());

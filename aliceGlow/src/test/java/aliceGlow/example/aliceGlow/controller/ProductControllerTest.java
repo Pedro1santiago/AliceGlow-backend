@@ -77,13 +77,13 @@ class ProductControllerTest {
     @Test
     void shouldListProductsPageSuccessfully() {
         Page<ProductDTO> page = new PageImpl<>(List.of(productDTO), PageRequest.of(0, 20), 1);
-        when(productService.listProductsPage(null, false, PageRequest.of(0, 20))).thenReturn(page);
+        when(productService.listProductsPage(null, false, null, PageRequest.of(0, 20))).thenReturn(page);
 
-        ResponseEntity<Page<ProductDTO>> response = productController.listProductsPage(null, false, PageRequest.of(0, 20));
+        ResponseEntity<Page<ProductDTO>> response = productController.listProductsPage(null, false, null, PageRequest.of(0, 20));
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().getTotalElements());
-        verify(productService).listProductsPage(null, false, PageRequest.of(0, 20));
+        verify(productService).listProductsPage(null, false, null, PageRequest.of(0, 20));
     }
 
     @Test
